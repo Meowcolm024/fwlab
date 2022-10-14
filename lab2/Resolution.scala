@@ -250,7 +250,23 @@ object Resolution {
    * Put the formula in negation normal form and then eliminates existential quantifiers using Skolemization
    */
   def skolemizationNegation(f0: Formula): Formula = {
-    (??? : Formula)
+    decreases(f0)
+    val (xx, _) = makeVariableNamesUnique(f0)
+    val nf = negationNormalForm(xx)
+
+    def deleteExist(f: Formula, ctx: List[Term], sub: Map[Identifier, Term]): Formula = {
+      require(f.isNNF)
+      // 死了啦，都是你害的
+      f match
+        case Predicate(n, c)    => Predicate(n, c.map(substitute(_, sub)))
+        case Neg(n)             => Neg(deleteExist(n, ctx, sub))
+        case And(l, r)          => And(deleteExist(l, ctx, sub), deleteExist(r, ctx, sub))
+        case Or(l, r)           => Or(deleteExist(l, ctx, sub), deleteExist(r, ctx, sub))
+        case Forall(v, i)       => Forall(v, deleteExist(i, Cons(v, ctx), sub))
+        case Exists(Var(v), i)  => deleteExist(i, ctx, sub + (v, Function(v, ctx)))
+    }.ensuring(res => res.isNNF && res.containsNoExistential)
+    
+    deleteExist(nf, Nil(), Map[Identifier, Term]())
   }.ensuring(res =>
     res.isNNF && res.containsNoExistential
   )
