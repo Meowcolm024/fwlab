@@ -225,7 +225,23 @@ object Resolution {
    * Put the formula in Negation Normal Form.
    */
   def negationNormalForm(f: Formula): Formula = {
-    (??? : Formula)
+    decreases(f)
+    f match
+      case Predicate(name, children)    => f
+      case And(left, right)             => And(negationNormalForm(left), negationNormalForm(right))
+      case Or(left, right)              => Or(negationNormalForm(left), negationNormalForm(right))
+      case Implies(left, right)         => Or(negationNormalForm(Neg(left)), negationNormalForm(right))
+      case Neg(inner)                   => 
+        inner match
+          case p@Predicate(_, _)        => Neg(p)
+          case Neg(n)                   => negationNormalForm(n)
+          case And(l, r)                => Or(negationNormalForm(Neg(l)), negationNormalForm(Neg(r)))
+          case Or(l, r)                 => And(negationNormalForm(Neg(l)), negationNormalForm(Neg(r)))
+          case Implies(l, r)            => And(negationNormalForm(l), negationNormalForm(Neg(r)))
+          case Forall(v, i)             => Exists(v, negationNormalForm(Neg(i)))
+          case Exists(v, i)             => Forall(v, negationNormalForm(Neg(i)))
+      case Forall(Var(id), inner)       => Forall(Var(id), negationNormalForm(inner))
+      case Exists(Var(id), inner)       => Exists(Var(id), negationNormalForm(inner))
   }.ensuring(res =>
     res.isNNF
   )
