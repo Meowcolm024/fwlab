@@ -276,7 +276,22 @@ object Resolution {
    * quantifiers and all variable names are unique, the matrix is equivalent to the whole formula.
    */
   def prenexSkolemizationNegation(f: Formula): Formula = {
-    (??? : Formula)
+    decreases(f)
+    val nf = skolemizationNegation(f)
+
+    def deleteAll(f: Formula): Formula = {
+      require(f.isNNF && f.containsNoExistential)
+      f match
+        case Predicate(n, c)    => f
+        case Neg(n)             => Neg(deleteAll(n))
+        case And(l, r)          => And(deleteAll(l), deleteAll(r))
+        case Or(l, r)           => Or(deleteAll(l), deleteAll(r))
+        case Forall(_, i)       => deleteAll(i)
+    }.ensuring(res => 
+      res.isNNF && res.containsNoUniversal && res.containsNoExistential
+    )
+
+    deleteAll(nf)
   }.ensuring(res =>
     res.isNNF && res.containsNoUniversal && res.containsNoExistential
   )
