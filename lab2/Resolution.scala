@@ -303,9 +303,23 @@ object Resolution {
    * If we only preserve satisfiability, we can avoid it by introducing fresh variables, but that is not asked here.
    */
   def conjunctionPrenexSkolemizationNegation(f: Formula): List[Clause] = {
-    (??? : List[Clause])
-  }
+    val nf = prenexSkolemizationNegation(f)
 
+    def helper(f: Formula): List[Clause] = {
+      require(f.isNNF && f.containsNoUniversal && f.containsNoExistential)
+      f match
+        case Predicate(_, _)      => Cons(Cons(Atom(f), Nil()), Nil())
+        case Neg(Predicate(_, _)) => Cons(Cons(Atom(f), Nil()), Nil())
+        case And(l, r)            => helper(l) ++ helper(r)
+        case Or(l, r)             =>
+          for
+            x <- helper(l)
+            y <- helper(r)
+          yield 
+            x ++ y
+    }
+    helper(nf)
+  }
 
   /*
    * A clause in a proof is either assumed, i.e. it is part of the initial formula, or it is deduced from previous clauses.
@@ -322,7 +336,30 @@ object Resolution {
    * Verify if a given proof is correct. The function should verify that every clause is correctly justified (unless assumed).
    */
   def checkResolutionProof(proof: ResolutionProof): Boolean = {
-    (??? : Boolean)
+
+    def subAtom(f: Atom, subst: Map[Identifier, Term]): Atom = {
+      f.get match {
+        case Predicate(name, children) => ???
+        case Neg(Predicate(name, children)) => ??
+      }
+    }
+
+    def helper(proof: ResolutionProof): Boolean = {
+      proof match {
+        case Nil()              => true
+        case Cons((c, ju), ps) => ju match {
+          case Assumed => checkResolutionProof(ps)
+          case Deduced((i, j), subst) =>
+            val c1 = proof(i).map(_._1).map(subAtom(_, subst))
+            val c2 = proof(j).map(_._1).map(subAtom(_, subst))
+            val f = Implies(And(c1, c2), c)
+            // c ~ c1 ~ c2
+            ???
+        }
+      }
+    }
+
+    helper(proof)
   }
 
   // Smart constructors
