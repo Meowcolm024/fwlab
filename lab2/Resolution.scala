@@ -336,30 +336,27 @@ object Resolution {
    * Verify if a given proof is correct. The function should verify that every clause is correctly justified (unless assumed).
    */
   def checkResolutionProof(proof: ResolutionProof): Boolean = {
-
     def subAtom(f: Atom, subst: Map[Identifier, Term]): Atom = {
       f.get match {
-        case Predicate(name, children) => ???
-        case Neg(Predicate(name, children)) => ??
+        case Predicate(name, children) => 
+          Atom(Predicate(name, children.map(substitute(_, subst))))
+        case Neg(Predicate(name, children)) => 
+          Atom(Neg(Predicate(name, children.map(substitute(_, subst)))))
       }
     }
 
-    def helper(proof: ResolutionProof): Boolean = {
-      proof match {
-        case Nil()              => true
-        case Cons((c, ju), ps) => ju match {
-          case Assumed => checkResolutionProof(ps)
+    proof.foldLeft(true) {
+      case (acc, (c, ju)) => ju match {
+          case Assumed                => acc
           case Deduced((i, j), subst) =>
-            val c1 = proof(i).map(_._1).map(subAtom(_, subst))
-            val c2 = proof(j).map(_._1).map(subAtom(_, subst))
-            val f = Implies(And(c1, c2), c)
-            // c ~ c1 ~ c2
-            ???
+            if i < 0 || i >= proof.length || j < 0 || j >= proof.length then
+              false
+            else
+              val c1: Clause = proof(i)._1.map(subAtom(_, subst))
+              val c2: Clause = proof(j)._1.map(subAtom(_, subst))
+              c.forall(e => c1.contains(e) && c2.contains(e)) && acc
         }
-      }
     }
-
-    helper(proof)
   }
 
   // Smart constructors
