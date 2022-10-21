@@ -345,18 +345,23 @@ object Resolution {
       }
     }
 
-    proof.foldLeft(true) {
-      case (acc, (c, ju)) => ju match {
-          case Assumed                => acc
+    def helper(pf: ResolutionProof): Boolean = {
+      pf match
+        case Nil() => true
+        case Cons((c, ju), ps) => ju match {
+          case Assumed                => helper(ps)
           case Deduced((i, j), subst) =>
-            if i < 0 || i >= proof.length || j < 0 || j >= proof.length then
+            val idx = proof.length - ps.length
+            if i < 0 || i >= idx || j < 0 || j >= idx then
               false
             else
               val c1: Clause = proof(i)._1.map(subAtom(_, subst))
               val c2: Clause = proof(j)._1.map(subAtom(_, subst))
-              c.forall(e => c1.contains(e) && c2.contains(e)) && acc
+              c.forall(e => c1.contains(e) && c2.contains(e)) && helper(ps)
         }
     }
+
+    helper(proof)
   }
 
   // Smart constructors
