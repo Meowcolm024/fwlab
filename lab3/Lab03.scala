@@ -37,7 +37,12 @@ object Lab03 extends lisa.Main{
   //Details about Sequent Calculus in LISA can be found here: https://github.com/epfl-lara/lisa/blob/main/Reference%20Manual/lisa.pdf
 
   THEOREM("Ex_All_implies_All_Ex") of "∃'x. ∀'y. 'R('x, 'y) ⊢ ∀'y. ∃'x. 'R('x, 'y)" PROOF {
-    //TODO
+    have ( H(x, y) |- H(x, y) ) by Hypothesis  // start
+    andThen ( forall(y, H(x, y)) |- H(x, y) ) by LeftForall(y)
+    andThen ( forall(y, H(x, y)) |- exists(x, H(x, y)) ) by RightExists(x)
+    andThen ( exists(x, forall(y, H(x, y))) |- exists(x, H(x, y)) ) by LeftExists
+    andThen ( exists(x, forall(y, H(x, y))) |- forall(y, exists(x, H(x, y))) ) by RightForall
+    // showCurrentProof()
   }
 
   THEOREM("Unique_Exist_Variant") of "∃'y. ∀'x. ('P('x) ⇔ 'x='y) ⊢ ∃'y. 'P('y) ∧ (∀'x. 'P('x) ⇒ 'x='y)" PROOF {
@@ -79,7 +84,7 @@ object Lab03 extends lisa.Main{
     Discharge(r1)
     Discharge(r2)
     Discharge(r3)
-    showCurrentProof()
+    // showCurrentProof()
   }
 
   THEOREM("Subset_Antisymmetry") of "subset_of('x, 'y); subset_of('y, 'x)  ⊢ 'x='y " PROOF {
@@ -98,7 +103,7 @@ object Lab03 extends lisa.Main{
     Discharge(r1)
     Discharge(r2)
     Discharge(r3)
-    showCurrentProof()
+    // showCurrentProof()
   }
 
 
