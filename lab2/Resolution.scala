@@ -357,7 +357,15 @@ object Resolution {
             else
               val c1: Clause = proof(i)._1.map(subAtom(_, subst))
               val c2: Clause = proof(j)._1.map(subAtom(_, subst))
-              c.forall(e => c1.contains(e) && c2.contains(e)) && helper(ps)
+              val t1 = c1.filter { a => a.get match
+                  case p @ Predicate(_, _) => !c2.contains(Atom(Neg(p)))
+                  case p @ Neg(n) => !c2.contains(Atom(n))
+                }
+              val t2 = c2.filter {a => a.get match
+                  case p @ Predicate(_, _) => !c1.contains(Atom(Neg(p)))
+                  case p @ Neg(n) => !c1.contains(Atom(n))
+                }
+              c == (t1 ++ t2) && helper(ps)
         }
     }
 
