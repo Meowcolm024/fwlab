@@ -71,7 +71,7 @@ definition IfC :: "condition \<Rightarrow> command \<Rightarrow> command \<Right
 lemma ifC_alt: 
   "IfC cond s1 s2 = {(s,s')|s s'. (s \<in> cond \<longrightarrow> (s,s')\<in>s1) \<and>
                                   (s \<notin> cond \<longrightarrow> (s,s')\<in>s2)}"
-  sorry
+  by (auto simp add: IfC_def AssumeC_def)
 
 definition WhileC :: "condition \<Rightarrow> command \<Rightarrow> command" where
   "WhileC b c = (AssumeC b O c)^* O AssumeC (- b)"
@@ -79,7 +79,8 @@ definition WhileC :: "condition \<Rightarrow> command \<Rightarrow> command" whe
 definition assignX :: "(state \<Rightarrow> int) \<Rightarrow> command" where
   "assignX f = {(s,s')|s s'. s' = S (f s) (y_in s)}"
 
-lemma "assignX (\<lambda> s. x_in s + k) = incXby k" sorry
+lemma "assignX (\<lambda> s. x_in s + k) = incXby k"
+  by (auto simp add: assignX_def incXby_def)
 
 section \<open>Hoare Triple\<close>
 
