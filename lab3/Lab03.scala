@@ -48,12 +48,25 @@ object Lab03 extends lisa.Main{
   THEOREM("Unique_Exist_Variant") of "∃'y. ∀'x. ('P('x) ⇔ 'x='y) ⊢ ∃'y. 'P('y) ∧ (∀'x. 'P('x) ⇒ 'x='y)" PROOF {
     //assume(exists(y, forall(x, Q(x) <=> (x===y) )))
 
-    have(forall(x, Q(x) <=> (x===y)) |- forall(x, (Q(x) <=> (x===y)))) by Restate
-    andThen(forall(x, (Q(x) <=> (x===y))) |- forall(x, (Q(x) ==>(x===y)) /\ ((x===y)==>Q(x))) ) by Restate
+    // have(forall(x, Q(x) <=> (x===y)) |- forall(x, (Q(x) <=> (x===y)))) by Restate
+    // andThen(forall(x, (Q(x) <=> (x===y))) |- forall(x, (Q(x) ==>(x===y)) /\ ((x===y)==>Q(x))) ) by Restate
 
-    val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- forall(x, (Q(x) ==> (x===y)))) by Trivial
-    //andThen(forall(x, Q(x) <=> (x===y)) |- forall(x, (x===y) ==> Q(x))) by Trivial
-    //val p2 = andThen(forall(x, Q(x) <=> (x===y)) |- Q(y)) by Trivial
+    // val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- forall(x, (Q(x) ==> (x===y)))) by Trivial
+    have(Q(x) <=> (x===y) |- (Q(x) <=> (x===y))) by Restate
+    andThen((Q(x) <=> (x===y)) |- (Q(x) ==>(x===y)) /\ ((x===y)==>Q(x))) by Restate
+
+    andThen(Q(x) <=> (x===y) |- (Q(x) ==> (x===y))) by Trivial
+    val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (Q(x) ==> (x===y))) by LeftForall(x)
+    //val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (forall(x, (Q(x) ==> (x===y))))) by RightForall
+
+    //andThen(Q(x) <=> (x===y) |- ((x===y) ==> Q(x))) by Trivial
+    have(Q(x) |- Q(x)) by Restate
+    andThen((Q(x) , (x===y)) |- Q(x)) by Weakening
+    //andThen((Q(x) <=> (x===y)) |- Q(x)) by Trivial 
+    //andThen(applySubst(x===y))
+    //andThen(Q(x) /\ (x===y) |- Q(y)) by Trivial
+    //andThen(Q(x) <=> (x===y) |- Q(y)) by Trivial
+    //val p2 = andThen(forall(x, Q(x) <=> (x===y)) |- Q(y)) by LeftForall(x)
 
     //have(forall(x, Q(x) <=> (x===y)) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by RightAnd(p1, p2)
     andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by LeftExists
