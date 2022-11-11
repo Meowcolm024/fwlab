@@ -60,15 +60,41 @@ object Lab03 extends lisa.Main{
     //val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (forall(x, (Q(x) ==> (x===y))))) by RightForall
 
     //andThen(Q(x) <=> (x===y) |- ((x===y) ==> Q(x))) by Trivial
-    have(Q(x) |- Q(x)) by Restate
-    andThen((Q(x) , (x===y)) |- Q(x)) by Weakening
-    //andThen((Q(x) <=> (x===y)) |- Q(x)) by Trivial 
-    //andThen(applySubst(x===y))
-    //andThen(Q(x) /\ (x===y) |- Q(y)) by Trivial
-    //andThen(Q(x) <=> (x===y) |- Q(y)) by Trivial
-    //val p2 = andThen(forall(x, Q(x) <=> (x===y)) |- Q(y)) by LeftForall(x)
+    // have(Q(x) |- Q(x)) by Restate
+    // andThen(applySubst(x===y))
+    // andThen((Q(x) , (x===y)) |- Q(y)) by Trivial
+    // //andThen((Q(x), Q(y), (x===y)) |- (Q(x), Q(y))) 
+    // //andThen((Q(x) <=> (x===y)) |- Q(x)) by Trivial 
+    // //andThen(applySubst(x===y))
+    // //andThen((Q(x) /\ (x===y)) |- Q(y)) by LeftAnd
+    // andThen((Q(x) <=> (x===y)) |- Q(y))  
 
-    //have(forall(x, Q(x) <=> (x===y)) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by RightAnd(p1, p2)
+    // have((Q(x), (x===y))|- (Q(x), x===y)) by Restate
+    // have((x===y) |- (x===y)) by Restate // 5
+    // andThen(applySubst((x===y) <=> Q(x))) // 6
+    // andThen((x===y, Q(x), (x===y) <=> Q(x)) |- Q(x)) by Weakening// 7
+    // andThen((Q(x) <=> (x===y)) |- Q(y)) by Trivial
+
+    //have((x===y)|- Q(y)) by Hypothesis
+    //val try1 = andThen((Q(x), x===y) |- Q(y)) by Weakening
+    // val try2 = have((Q(x), (x===y))|- (Q(x), x===y)) by Restate
+    // have ((Q(x), (x===y)) |- Q(y)) by Cut(try1, try2)
+
+    val try1 = have(Q(y) |- Q(y)) by Restate
+    //LeftSubstEq(List((x, y)), Q(x))
+    andThen(applySubst(y===x))
+    andThen((Q(x), y===x) |- Q(y)) by Weakening
+    //have(x === y |- (Q(x) <=> Q(y))) by Trivial
+    //val try2 = andThen((Q(y), x===y)|- Q(y)) by Trivial
+
+
+    // val try2 = andThen((x===y) |- Q(y)) by Trivial
+    // val try3 = have((Q(x) ==>(x===y) |- Q(y))) by LeftImplies(try1, try2)
+    // val try4 = have(forall(x, Q(x) <=> (x===y)) |- Q(y)) by Cut(p1, try3)
+
+    val p2 = andThen(forall(x, Q(x) <=> (x===y)) |- Q(y)) by LeftForall(x)
+
+    have(forall(x, Q(x) <=> (x===y)) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by RightAnd(p1, p2)
     andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by LeftExists
     andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- exists(y, Q(y) /\ forall(x, Q(x) ==> (x===y)))) by RightExists(y)
   }
