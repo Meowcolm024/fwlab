@@ -49,10 +49,10 @@ definition incYby :: "int \<Rightarrow> command" where
   "incYby k = {(S x y,S x (y + k))|x y. True}"
 
 lemma xySwap: "incXby dx  O  incYby dy  =  incYby dy  O  incXby dx "
-  sorry
-
-lemma doubleInc: "incXby dx1  O  incXby dx2  =  incXby (dx1 + dx2)"
-  sorry
+  by (auto simp add: incXby_def incYby_def )
+  
+lemma doubleInc: "incXby dx1  O  incXby dx2  =  incXby (dx1 + dx2)" 
+  by (auto simp add: incXby_def)
 
 type_synonym condition = "state set"
 

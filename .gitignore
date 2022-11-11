@@ -2,3 +2,4 @@
 .metals/
 .bloop/
 .stainless-cache/
+*.thy~
