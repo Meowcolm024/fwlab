@@ -88,32 +88,34 @@ definition triple :: "'a set \<Rightarrow> 'a rel \<Rightarrow> 'a set \<Rightar
   where
   "triple P r Q = (\<forall> x x'. (x \<in> P \<and> (x,x') \<in> r \<longrightarrow> x' \<in> Q))"
 
-lemma "\<Turnstile> {{s. x_in s > 0}} incX {{s. x_in s > 0}}" sorry
+lemma "\<Turnstile> {{s. x_in s > 0}} incX {{s. x_in s > 0}}"
+  by (auto simp add: triple_def incX_def)
 
 lemma "k > 0 \<Longrightarrow>
       \<Turnstile> {{s. x_in s \<ge> 0 \<and> y_in s \<ge> 0}} 
            (incX O (incYby k))
-         {{s. x_in s > 0 \<and> y_in s > 0}}" 
-  sorry
+         {{s. x_in s > 0 \<and> y_in s > 0}}"
+  by (auto simp add: triple_def incX_def incYby_def)
 
 lemma "\<lbrakk> \<Turnstile> {P} s1 {Q} ; \<Turnstile> {Q} s2 {R} \<rbrakk> \<Longrightarrow> 
              \<Turnstile> {P} (s1 O s2) {R}" 
-  sorry
+  by (auto simp add: triple_def)
 
-lemma "\<lbrakk> \<Turnstile> {P} c {Q} ; Q \<subseteq> Q' \<rbrakk> \<Longrightarrow> \<Turnstile> {P} c {Q'}" 
-  sorry
+lemma "\<lbrakk> \<Turnstile> {P} c {Q} ; Q \<subseteq> Q' \<rbrakk> \<Longrightarrow> \<Turnstile> {P} c {Q'}"
+  by (auto simp add: triple_def)
 
 lemma "\<lbrakk>P' \<subseteq> P ; \<Turnstile> {P} c {Q}\<rbrakk> \<Longrightarrow> \<Turnstile> {P'} c {Q}" 
-  sorry
+  by (auto simp add: triple_def)
 
 section \<open>Strongest postcondition (relation image)\<close>
 
 definition sp :: \<open>'a set \<Rightarrow> 'a rel \<Rightarrow> 'a set\<close> where
   \<open>sp P r = {x'. \<exists> x \<in> P. (x,x') \<in> r}\<close>
 
-lemma spPointWise: "sp P r = \<Union> {sp {s} r|s. s \<in> P}" sorry
+lemma spPointWise: "sp P r = \<Union> {sp {s} r|s. s \<in> P}"
+  by (auto simp add: sp_def)
 
-lemma "Range {(x,y)|x y. P x y} = {y. \<exists> x. P x y}" sorry
+lemma "Range {(x,y)|x y. P x y} = {y. \<exists> x. P x y}" by (auto)
 
 lemma sp_via_range2: "Range ((Id_on P) O r) = sp P r"
 proof -
@@ -124,17 +126,17 @@ proof -
     by auto
   also have "... = Range ({(x,y)|x y. x \<in> P \<and> (x,y) \<in> r})" by auto 
   also have "... = {y. \<exists> x. x \<in> P \<and> (x,y) \<in> r}" by auto 
-  also have "... = sp P r" sorry
+  also have "... = sp P r" by (auto simp add: sp_def)
   finally show ?thesis .
 qed
 
 thm sym
 
 lemma sp_via_range: "sp P r = Range ((Id_on P) O r)"
-  sorry
+  by (auto simp add: sp_def)
 
 lemma "sp (sp P r1) r2 = sp P (r1 O r2)" 
-  sorry
+  by (auto simp add: sp_def)
 
 section \<open>Weakest precondition\<close>
 
@@ -143,18 +145,26 @@ definition wp :: "'a rel \<Rightarrow> 'a set \<Rightarrow> 'a set" where
 
 section \<open>Properties Connecting triple, wp, and sp\<close>
 
-lemma tripleSp: "(\<Turnstile> {P} r {Q}) = (sp P r \<subseteq> Q)" sorry
-lemma tripleWp: "(\<Turnstile> {P} r {Q}) = (P \<subseteq> wp r Q)" sorry
+lemma tripleSp: "(\<Turnstile> {P} r {Q}) = (sp P r \<subseteq> Q)"
+  by (auto simp add: triple_def sp_def)
+lemma tripleWp: "(\<Turnstile> {P} r {Q}) = (P \<subseteq> wp r Q)"
+  by (auto simp add: triple_def wp_def)
 
-lemma sp_post: "\<Turnstile> {P} r {sp P r}" sorry
-lemma sp_Strongest: "\<Turnstile> {P} r {Q} \<Longrightarrow> sp P r \<subseteq> Q" sorry
+lemma sp_post: "\<Turnstile> {P} r {sp P r}"
+  by (auto simp add: triple_def  sp_def)
+lemma sp_Strongest: "\<Turnstile> {P} r {Q} \<Longrightarrow> sp P r \<subseteq> Q"
+  by (auto simp add: triple_def sp_def)
 
-lemma wp_pre: "\<Turnstile> {wp r Q} r {Q}" sorry
+lemma wp_pre: "\<Turnstile> {wp r Q} r {Q}"
+  by (auto simp add: triple_def wp_def)
 
-lemma wp_Weakest: "\<Turnstile> {P} r {Q} \<Longrightarrow> P \<subseteq> wp r Q" sorry
+lemma wp_Weakest: "\<Turnstile> {P} r {Q} \<Longrightarrow> P \<subseteq> wp r Q"
+  by (auto simp add: triple_def wp_def)
 
-lemma wp_sp_dual: "- wp r Q = sp (- Q) (r^-1)" sorry
+lemma wp_sp_dual: "- wp r Q = sp (- Q) (r^-1)"
+  by (auto simp add: wp_def sp_def)
 
-lemma wpPointWise: "wp r Q = {s. sp {s} r \<subseteq> Q}" sorry
+lemma wpPointWise: "wp r Q = {s. sp {s} r \<subseteq> Q}"
+  by (auto simp add: wp_def sp_def)
 
 end
