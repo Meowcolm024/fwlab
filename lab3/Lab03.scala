@@ -1,3 +1,12 @@
+import lisa.automation.kernel.SimplePropositionalSolver.*
+import lisa.automation.kernel.SimpleSimplifier.*
+
+
+object Lab03 extends lisa.Main{
+
+  private val x = VariableLabel("x")
+  private val y = VariableLabel("y")
+  private val z = VariableLabel("z")
   private val Q = SchematicPredicateLabel("P", 1)
   private val H = SchematicPredicateLabel("R", 2)
 
