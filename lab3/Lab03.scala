@@ -1,12 +1,3 @@
-import lisa.automation.kernel.SimplePropositionalSolver.*
-import lisa.automation.kernel.SimpleSimplifier.*
-
-
-object Lab03 extends lisa.Main{
-
-  private val x = VariableLabel("x")
-  private val y = VariableLabel("y")
-  private val z = VariableLabel("z")
   private val Q = SchematicPredicateLabel("P", 1)
   private val H = SchematicPredicateLabel("R", 2)
 
@@ -44,55 +35,25 @@ object Lab03 extends lisa.Main{
     andThen ( exists(x, forall(y, H(x, y))) |- forall(y, exists(x, H(x, y))) ) by RightForall
     // showCurrentProof()
   }
+  show
 
   THEOREM("Unique_Exist_Variant") of "∃'y. ∀'x. ('P('x) ⇔ 'x='y) ⊢ ∃'y. 'P('y) ∧ (∀'x. 'P('x) ⇒ 'x='y)" PROOF {
-    //assume(exists(y, forall(x, Q(x) <=> (x===y) )))
-
-    // have(forall(x, Q(x) <=> (x===y)) |- forall(x, (Q(x) <=> (x===y)))) by Restate
-    // andThen(forall(x, (Q(x) <=> (x===y))) |- forall(x, (Q(x) ==>(x===y)) /\ ((x===y)==>Q(x))) ) by Restate
-
-    // val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- forall(x, (Q(x) ==> (x===y)))) by Trivial
     have(Q(x) <=> (x===y) |- (Q(x) <=> (x===y))) by Restate
     andThen((Q(x) <=> (x===y)) |- (Q(x) ==>(x===y)) /\ ((x===y)==>Q(x))) by Restate
 
     andThen(Q(x) <=> (x===y) |- (Q(x) ==> (x===y))) by Trivial
     val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (Q(x) ==> (x===y))) by LeftForall(x)
-    //val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (forall(x, (Q(x) ==> (x===y))))) by RightForall
+    // 2nd part done
 
-    //andThen(Q(x) <=> (x===y) |- ((x===y) ==> Q(x))) by Trivial
-    // have(Q(x) |- Q(x)) by Restate
-    // andThen(applySubst(x===y))
-    // andThen((Q(x) , (x===y)) |- Q(y)) by Trivial
-    // //andThen((Q(x), Q(y), (x===y)) |- (Q(x), Q(y))) 
-    // //andThen((Q(x) <=> (x===y)) |- Q(x)) by Trivial 
-    // //andThen(applySubst(x===y))
-    // //andThen((Q(x) /\ (x===y)) |- Q(y)) by LeftAnd
-    // andThen((Q(x) <=> (x===y)) |- Q(y))  
-
-    // have((Q(x), (x===y))|- (Q(x), x===y)) by Restate
-    // have((x===y) |- (x===y)) by Restate // 5
-    // andThen(applySubst((x===y) <=> Q(x))) // 6
-    // andThen((x===y, Q(x), (x===y) <=> Q(x)) |- Q(x)) by Weakening// 7
-    // andThen((Q(x) <=> (x===y)) |- Q(y)) by Trivial
-
-    //have((x===y)|- Q(y)) by Hypothesis
-    //val try1 = andThen((Q(x), x===y) |- Q(y)) by Weakening
-    // val try2 = have((Q(x), (x===y))|- (Q(x), x===y)) by Restate
-    // have ((Q(x), (x===y)) |- Q(y)) by Cut(try1, try2)
-
-    val try1 = have(Q(y) |- Q(y)) by Restate
-    //LeftSubstEq(List((x, y)), Q(x))
-    andThen(applySubst(y===x))
-    andThen((Q(x), y===x) |- Q(y)) by Weakening
-    //have(x === y |- (Q(x) <=> Q(y))) by Trivial
-    //val try2 = andThen((Q(y), x===y)|- Q(y)) by Trivial
-
-
-    // val try2 = andThen((x===y) |- Q(y)) by Trivial
-    // val try3 = have((Q(x) ==>(x===y) |- Q(y))) by LeftImplies(try1, try2)
-    // val try4 = have(forall(x, Q(x) <=> (x===y)) |- Q(y)) by Cut(p1, try3)
-
-    val p2 = andThen(forall(x, Q(x) <=> (x===y)) |- Q(y)) by LeftForall(x)
+    val try1 = have(Q(x) |- Q(x)) by Restate
+    //andThen(RightSubstEq(x===y))
+    val try2 = andThen(Q(x) |- ((x===x), Q(x))) by Weakening
+    have((Q(x)<=> (x===x)) |- Q(x)) by LeftImplies(try1, try2)
+    andThen((forall(x, Q(x)<=>(x===y))) |- Q(y)) by LeftForall(x)
+    //andThen(applySubst(x===y))
+    //andThen((Q(x), (x===y)) |- Q(y)) by Trivial
+    //andThen((Q(x)/\(x===y)) |- Q(y)) by Trivial
+    val p2 = andThen((Q(x) <=> (x===y)) |- forall(y, Q(y))) by RightForall
 
     have(forall(x, Q(x) <=> (x===y)) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by RightAnd(p1, p2)
     andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by LeftExists
@@ -135,6 +96,7 @@ object Lab03 extends lisa.Main{
     Discharge(r3)
     // showCurrentProof()
   }
+  show
 
   THEOREM("Subset_Antisymmetry") of "subset_of('x, 'y); subset_of('y, 'x)  ⊢ 'x='y " PROOF {
     val ext = have(extensionalityAxiom)    //  ⊢ ∀'x. ∀'y. (∀'z. 'z ∊ 'x ⇔ 'z ∊ 'y) ⇔ 'x = 'y
@@ -154,6 +116,6 @@ object Lab03 extends lisa.Main{
     Discharge(r3)
     // showCurrentProof()
   }
-
+  show
 
 }
