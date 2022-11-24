@@ -1,7 +1,7 @@
 trait Ord[A] {
   extension (self: A)
-    def ===(that: A): Boolean
     def <(that: A): Boolean
+    def ===(that: A): Boolean = self == that
     def <=(that: A): Boolean = self === that || self < that
 }
 
@@ -20,7 +20,6 @@ enum Distance {
 given Ord[Distance] with {
   import Distance._
   extension (self: Distance)
-    def ===(that: Distance) = self == that
     def <(that: Distance): Boolean = (self, that) match
       case (I, I)       => true
       case (I, R(_))    => false
@@ -67,8 +66,69 @@ object Heap {
       case Empty        => Nil
       case Vertex(h, t) => h :: t.flatMap(_.forget)
   }
+
+  extension [A: Ord](self: List[A]) {
+    def toHeap: Heap[A] = Heap.fromList(self)
+  }
+
+}
+
+case class Assoc(n: Node, d: Distance)
+
+given Ord[Assoc] with {
+  extension (self: Assoc) def <(that: Assoc): Boolean = self.d < that.d
 }
 
 case class Graph(graph: Map[Node, Map[Node, Distance]]) {
-  def dijkstra = ???
+  import Heap.toHeap
+
+  def dijkstra(src: Node): List[Assoc] =
+    def go(res: List[Assoc])(q: Heap[Assoc]): List[Assoc] =
+      Heap.extractMin(q) match
+        case None => res
+        case Some((h @ Assoc(nu, du), tl)) =>
+          def f(e: Assoc) = graph.get(nu).flatMap(_.get(e.n)) match
+            case None    => e
+            case Some(w) => Assoc(e.n, if du + w < e.d then du + w else e.d)
+          go(h :: res)(Heap.forget(tl).map(f).toHeap)
+
+    go(Nil)(
+      graph.keys.toList
+        .map(n => Assoc(n, if n == src then Distance.R(0) else Distance.I))
+        .toHeap
+    )
+
 }
+
+object Graph {
+  def ins(xs: List[(Node, Node, Distance)])(
+      g: Map[Node, Map[Node, Distance]]
+  ): Map[Node, Map[Node, Distance]] =
+    xs match
+      case Nil => g
+      case (u, v, w) :: next =>
+        ins(next)(
+          g.updatedWith(u) {
+            case None    => Some(Map(v -> w))
+            case Some(m) => Some(m.updated(v, w))
+          }
+        )
+
+  def apply(vertices: (Node, Node, Int)*): Graph =
+    Graph(
+      ins(vertices.map((a, b, c) => (a, b, Distance.R(c))).toList)(Map.empty)
+    )
+}
+
+val test = Graph(
+  ("a", "b", 10),
+  ("a", "c", 5),
+  ("b", "c", 2),
+  ("c", "b", 3),
+  ("b", "d", 1),
+  ("c", "d", 9),
+  ("c", "e", 2),
+  ("d", "e", 4),
+  ("e", "d", 6),
+  ("e", "a", 7)
+).dijkstra("a")
