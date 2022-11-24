@@ -119,18 +119,30 @@ object testHeap {
       merge(reverse(ns1), ns2)
   }) ensuring(res => heapContent(res).subsetOf(heapContent(h)))
 
-  def extractMin(h: Heap) : (Int, Heap) = (h match {
+  def extractMin(h: Heap) : (OptInt, Heap) = (h match {
     // = findMin + extractMi
-    case Empty => None
-    case Nodes(Node(_, e, ns1), ns2) => {
-        ????
-    }
+    case Empty => (None, Empty)
+    case ts : Nodes =>
+      val (Node(_, e, ns1), ns2) = getMin(ts)
+      (Some(e), merge(reverse(ns1), ns2))
   })
 
-  def Sort(l0: List[Int]) : List[Int] = {
-    val h0 = l0.foldRight(Empty:Heap)((ele, h) => insert(ele, h))
-
+  def tolist(h: Heap) : List[Int] = {
+    extractMin(h) match {
+      case (None, Empty) => List() : List[Int]
+      case (Some(ele), h2) => ele :: tolist(h2)
+    }
   }
+
+  def isSorted(l0: List[Int], cmp: (Int, Int) => Boolean): Boolean = l0 match {
+    case Nil() => true
+    case Cons(x, Nil()) => true
+    case Cons(x, xs) => cmp(x, xs.head) && isSorted(xs, cmp)
+  }
+
+  def Sort(l0: List[Int]) : List[Int] = {
+    tolist(l0.foldRight(Empty:Heap)((ele, h) => insert(ele, h)))
+  } ensuring (res => isSorted(res, (a, b) => a > b))
 
   def sanity1() : Boolean = {
     val h0 = insert(42, Empty)
