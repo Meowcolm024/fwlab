@@ -54,15 +54,12 @@ object Lab03 extends lisa.Main{
     val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (Q(x) ==> (x===y))) by LeftForall(x)
     // 2nd part done
 
-    val try1 = have(Q(x) |- Q(x)) by Restate
+    val try1 = have(Q(y) |- Q(y)) by Restate
     //andThen(RightSubstEq(x===y))
-    val try2 = andThen(Q(x) |- ((x===x), Q(x))) by Weakening
-    have((Q(x)<=> (x===x)) |- Q(x)) by LeftImplies(try1, try2)
-    andThen((forall(x, Q(x)<=>(x===y))) |- Q(y)) by LeftForall(x)
-    //andThen(applySubst(x===y))
-    //andThen((Q(x), (x===y)) |- Q(y)) by Trivial
-    //andThen((Q(x)/\(x===y)) |- Q(y)) by Trivial
-    val p2 = andThen((Q(x) <=> (x===y)) |- forall(y, Q(y))) by RightForall
+    val try2 = andThen(Q(y) |- ((y===x), Q(y))) by Weakening
+    have((Q(y)<=> (y===y)) |- Q(y)) by LeftImplies(try1, try2)
+    // Following one has some problem
+    val p2 = andThen((forall(x, Q(x)<=>(x===y))) |- Q(y)) by LeftForall(x)
 
     have(forall(x, Q(x) <=> (x===y)) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by RightAnd(p1, p2)
     andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by LeftExists
