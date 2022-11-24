@@ -27,5 +27,6 @@ toList h = case extractMin h of
     Nothing     -> []
     Just (h, t) -> h : toList t
 
-heapSort :: Ord a => [a] -> [a]
-heapSort = toList . fromList
+forget :: Ord a => Heap a -> [a]
+forget Empty = []
+forget (Heap h t) = h : (t >>= forget)
