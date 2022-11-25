@@ -90,7 +90,7 @@ case class Graph(graph: Map[Node, Map[Node, Distance]]) {
           def f(e: Assoc) = graph.get(nu).flatMap(_.get(e.n)) match
             case None    => e
             case Some(w) => Assoc(e.n, if du + w < e.d then du + w else e.d)
-          go(h :: res)(Heap.forget(tl).map(f).toHeap)
+          go(h :: res)(tl.forget.map(f).toHeap)
 
     go(Nil)(
       graph.keys.toList
