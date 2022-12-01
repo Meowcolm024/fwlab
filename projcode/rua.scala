@@ -161,7 +161,7 @@ object testHeap {
       case Empty => Nil()
       case n =>
         val (x, xs) = extractMin(n)
-        Cons(x, tolist(xs))
+        Cons(x, toList(xs))
     }
   } ensuring (res =>
     heapContent(h) == res.content
