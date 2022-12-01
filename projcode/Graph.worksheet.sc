@@ -78,8 +78,15 @@ object Heap {
 
 }
 
+import Heap.toHeap
+def sort[A:Ord](l: List[A]):List[A] = l.toHeap.toList
+
 case class Assoc(n: Node, d: Distance) {
   override def toString: String = s"$n -> $d"
+}
+
+given Ord[Int] with {
+  extension (self: Int) def <(that: Int): Boolean = self < that
 }
 
 given Ord[Assoc] with {
@@ -140,3 +147,5 @@ val test = Graph(
   ("e", "d", 6),
   ("e", "a", 7)
 ).dijkstra("a")
+
+sort(List(1, 1, 4, 5, 1, 4, 114514))
