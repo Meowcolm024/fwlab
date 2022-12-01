@@ -30,3 +30,5 @@ toList h = case extractMin h of
 forget :: Ord a => Heap a -> [a]
 forget Empty = []
 forget (Heap h t) = h : (t >>= forget)
+
+test1 = fromList [5,4,3,2,1]

@@ -15,21 +15,30 @@ enum Distance {
     case (_, I)       => I
     case (I, _)       => I
     case (R(i), R(j)) => R(i + j)
+
+  override def toString: String = this match
+    case Distance.R(i) => i.toString
+    case Distance.I    => "inf"
+
 }
 
 given Ord[Distance] with {
   import Distance._
   extension (self: Distance)
     def <(that: Distance): Boolean = (self, that) match
-      case (I, I)       => true
+      case (I, I)       => false
       case (I, R(_))    => false
       case (R(_), I)    => true
-      case (R(i), R(j)) => i <= j
+      case (R(i), R(j)) => i < j
 }
 
 enum Heap[+A] {
   case Empty
   case Vertex(h: A, t: List[Heap[A]])
+
+  def size: Int = this match
+    case Empty        => 0
+    case Vertex(h, t) => 1 + t.map(_.size).sum
 }
 
 object Heap {
@@ -51,11 +60,7 @@ object Heap {
     case Vertex(h, Nil)     => Some(h -> Empty)
     case Vertex(h, x :: xs) => Some(h -> insHeap(x, xs))
 
-  def apply[A: Ord](xs: A*): Heap[A] =
-    xs.toList.foldRight(Empty: Heap[A])(insert)
-
-  def fromList[A: Ord](xs: List[A]): Heap[A] =
-    xs.foldRight(Empty: Heap[A])(insert)
+  def apply[A: Ord](xs: A*): Heap[A] = xs.toList.toHeap
 
   extension [A: Ord](self: Heap[A]) {
     def toList: List[A] = Heap.extractMin(self) match
@@ -68,12 +73,14 @@ object Heap {
   }
 
   extension [A: Ord](self: List[A]) {
-    def toHeap: Heap[A] = Heap.fromList(self)
+    def toHeap: Heap[A] = self.foldRight(Empty: Heap[A])(insert)
   }
 
 }
 
-case class Assoc(n: Node, d: Distance)
+case class Assoc(n: Node, d: Distance) {
+  override def toString: String = s"$n -> $d"
+}
 
 given Ord[Assoc] with {
   extension (self: Assoc) def <(that: Assoc): Boolean = self.d < that.d
@@ -81,6 +88,7 @@ given Ord[Assoc] with {
 
 case class Graph(graph: Map[Node, Map[Node, Distance]]) {
   import Heap.toHeap
+  import Distance._
 
   def dijkstra(src: Node): List[Assoc] =
     def go(res: List[Assoc])(q: Heap[Assoc]): List[Assoc] =
@@ -94,7 +102,7 @@ case class Graph(graph: Map[Node, Map[Node, Distance]]) {
 
     go(Nil)(
       graph.keys.toList
-        .map(n => Assoc(n, if n == src then Distance.R(0) else Distance.I))
+        .map(n => Assoc(n, if n == src then R(0) else I))
         .toHeap
     )
 
