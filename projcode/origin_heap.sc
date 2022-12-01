@@ -1,9 +1,10 @@
-import stainless.collection._
-import stainless.lang._
-import stainless.annotation._
+/* Copyright 2009-2016 EPFL, Lausanne */
 
-object testHeap {
-      /*~~~~~~~~~~~~~~~~~~~~~~~*/
+import stainless.annotation._
+import stainless.lang._
+
+object Heaps {
+  /*~~~~~~~~~~~~~~~~~~~~~~~*/
   /* Data type definitions */
   /*~~~~~~~~~~~~~~~~~~~~~~~*/
   case class Node(rank : BigInt, elem : Int, nodes : Heap)
@@ -119,41 +120,18 @@ object testHeap {
       merge(reverse(ns1), ns2)
   }) ensuring(res => heapContent(res).subsetOf(heapContent(h)))
 
-  // def extractMin(h: Heap) : (OptInt, Heap) = (h match {
-  //   // = findMin + deleteMin
-  //   case Empty => (None, Empty)
-  //   case ts : Nodes =>
-  //     val (Node(_, e, ns1), ns2) = getMin(ts)
-  //     val ret = merge(reverse(ns1), ns2)
-  //     (Some(e), ret)
-  // }) ensuring()
-
-  def toheap(l0: List[Int]) : Heap = {
-    l0.foldRight(Empty:Heap)((ele, h) => insert(ele, h))
-  }
-
-  def tolist(h: Heap) : List[Int] = {
-    decreases(heapContent(h).toList.size)
-    val h2 = Empty
-    h match {
-      case Empty => Nil()
-      case _ => val (Node(r1, ele, n1), h2) = getMin(h)
-                ele :: tolist(h2)
-    }
-  } ensuring (true)//(res => res == Nil() || heapContent(h).toList.size == res.size)
-
-  def isSorted(l0: List[Int]):Boolean = l0 match {//, cmp: (Int, Int) => Boolean): Boolean = l0 match {
-    case Nil() => true
-    case Cons(x, Nil()) => true
-    case Cons(x1, Cons(x2, rest)) =>
-      x1 < x2 && isSorted(Cons(x2, rest))
-      //cmp(x1, x2) && isSorted(Cons(x2, rest), cmp)
-  }
-
-  def Sort(l0: List[Int]) : List[Int] = {
-    require(l0 != Nil())
-    tolist(toheap(l0))
-  } ensuring ((res:List[Int]) => isSorted(res))//, (a, b) => a < b))
+  def sanity0() : Boolean = {
+    val h0 : Heap = Empty
+    val h1 = insert(42, h0)
+    val h2 = insert(72, h1)
+    val h3 = insert(0, h2)
+    val h4 = insert(42, h3)
+    findMin(h0) == None &&
+    findMin(h1) == Some(42) &&
+    findMin(h2) == Some(42) &&
+    findMin(h3) == Some(0) &&
+    findMin(h4) == Some(0)
+  }.holds
 
   def sanity1() : Boolean = {
     val h0 = insert(42, Empty)
@@ -161,12 +139,10 @@ object testHeap {
     val h2 = merge(h0, h1)
     findMin(h2) == Some(0)
   }.holds
-    @extern
-  def main(args: Array[String]): Unit = {
-      println("2222")
-  //   println(subList(List(0, 2), List(0, 1, 2))) // true
-  //   println(subList(List(1, 0), List(0, 0, 1))) // false
-  //   println(subList(List(10, 5, 25), List(70, 10, 11, 8, 5, 25, 22))) // true
-  }
 
+  def sanity3() : Boolean = {
+    val h0 = insert(42, insert(0, insert(12, Empty)))
+    val h1 = deleteMin(h0)
+    findMin(h1) == Some(12)
+  }.holds
 }
