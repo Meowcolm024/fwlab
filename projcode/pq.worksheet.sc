@@ -18,6 +18,10 @@ extension (self: Distance) {
     case (Real(_), Inf)     => true
     case (Inf, Real(_))     => false
     case (Real(l), Real(r)) => l <= r
+
+  def +(that: Distance): Distance = (self, that) match
+    case (Real(l), Real(r)) => Real(l + r)
+    case _                  => Inf
 }
 
 def noDuplicates[A](l: List[(Int, A)]): Boolean = l match {
@@ -73,4 +77,74 @@ def getMin(l: List[Node]): (Node, List[Node]) = {
     res._2.content ++ Set(res._1) == l.content
 )
 
-case class Graph(graph: List[(Int, List[(Int, Distance)])]) {}
+case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
+  require(noDuplicates(graph) && graph.forall(e => noDuplicates(e._2)))
+
+  def distance(u: Int, v: Int): Distance = {
+    graph.get(u).flatMap(_.get(v)) match
+      case None()  => Inf
+      case Some(d) => d
+  }
+
+  def iterate(seen: List[Node], future: List[Node]): List[Node] = {
+    decreases(future.size)
+    future match
+      case Nil() => seen
+      case fu @ Cons(_, _) =>
+        getMin(fu) match
+          case (h, t) =>
+            iterate(h :: seen, t.map(tar => updateDist(this, h, tar)))
+  }
+
+  def dijkstra(start: Int): List[Node] =
+    iterate(Nil[Node](), prepare(this, start))
+}
+
+def prepareProp(
+    res: List[Node],
+    graph: List[(Int, List[Node])],
+    start: Int
+): Boolean =
+  res.size == graph.size &&
+    res.map(_._1) == graph.map(_._1) &&
+    (res.get(start) match {
+      case Some(d) => d == Real(0)
+      case None()  => res.forall(_._2 == Inf)
+    })
+
+def prepareAux(
+    graph: List[(Int, List[Node])],
+    start: Int
+): List[Node] = {
+  graph match
+    case Nil() => Nil()
+    case Cons((v, _), xs) if v == start =>
+      Cons((v, Real(0)), prepareAux(xs, start))
+    case Cons((v, _), xs) => Cons((v, Inf), prepareAux(xs, start))
+} ensuring (res => prepareProp(res, graph, start))
+
+def prepare(graph: Graph, start: Int): List[Node] = {
+  prepareAux(graph.graph, start)
+} ensuring (res => prepareProp(res, graph.graph, start))
+
+// update distant to node tar (when at bode cur)
+def updateDist(graph: Graph, cur: Node, tar: Node): Node = {
+  val nd = cur._2 + graph.distance(cur._1, tar._1)
+  (tar._1, if nd <= tar._2 then nd else tar._2)
+} ensuring (_._2 <= tar._2)
+
+@extern
+def main: Unit = {
+  val g = Graph(
+    Cons(
+      (1, Cons((2, Real(BigInt(1))), Cons((3, Real(BigInt(3))), Nil()))),
+      Cons(
+        (2, Cons((4, Real(BigInt(5))), Cons((3, Real(BigInt(1))), Nil()))),
+        Cons((3, Cons((4, Real(BigInt(2))), Nil())), Nil())
+      )
+    )
+  )
+  assert(g.distance(1, 2) == Real(BigInt(1)))
+  assert(g.distance(2, 1) == Inf)
+  println((g.dijkstra(1).get(4) == Some(Real(BigInt(4)))).toString)
+}
