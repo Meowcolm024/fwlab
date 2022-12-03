@@ -73,6 +73,17 @@ object testHeap {
   }) ensuring (res =>
     heapContent(res) == nodeContent(t) ++ heapContent(h)
       && size(res) == sizeNode(t) + size(h)
+      && (((a: Heap, b: Heap) => {
+        require(a != Empty)
+        val Some(a1) = findMin(a)
+        findMin(b) match {
+          case None => true
+          case Some(b1) =>
+            a1 <= b1
+          case _ => false
+        }
+      }).apply(res, h)
+      )
   )
 
   private def getMin(h: Heap): (Node, Heap) = {
@@ -155,6 +166,23 @@ object testHeap {
       && size(res._2) + 1 == size(h)
   )
 
+  def test_isSorted(): Boolean = {
+      val l = List(1, 2, 3)
+      isSorted(l, ((a, b) => a < b))
+  }.holds
+
+  def test_extract_from_heap(h: Heap): Boolean = {
+      require(size(h) >= 2)
+      val (x, h0) = extractMin(h)
+      val Some(x0) = findMin(h)
+      val Some(x1) = findMin(h0)
+      x == x0
+      // findMin(h0) match
+      //   case Some(y) => x <= y
+      //val (y, h1) = extractMin(h0)
+      //x <= y
+  }.holds
+
   def toList(h: Heap): List[Int] = {
     decreases(size(h))
     h match {
@@ -166,6 +194,7 @@ object testHeap {
   } ensuring (res =>
     heapContent(h) == res.content
       && size(h) == res.size
+      && isSorted(res, ((a, b) => a < b)) // GGGGGG
   )
 
   def isSorted(l0: List[Int], cmp: (Int, Int) => Boolean): Boolean = {
@@ -177,10 +206,26 @@ object testHeap {
     } 
   }
 
-  def Sort(l0: List[Int]): List[Int] = {
-    // require(l0 != Nil())
-    toList(l0.foldRight(Empty: Heap)((ele, h) => insert(ele, h)))
-  } ensuring (res => isSorted(res, (a, b) => a < b))
+  def toHeap(l0: List[Int]): Heap = {
+    decreases(l0)
+    l0 match {
+      case Nil () => Empty
+      case Cons(x, xs) => insert(x, toHeap(xs))
+    }
+    // l0.foldRight(Empty: Heap)((ele, h) => insert(ele, h))
+  } ensuring ( res =>
+    heapContent(res) == l0.content
+      && size(res) == l0.size
+  )
+
+  // def Sort(l0: List[Int]): List[Int] = {
+  //   val h0 = toHeap(l0)
+  //   toList(h0)
+  // } ensuring (res => 
+  //   res.content == l0.content && 
+  //   res.size == l0.size && 
+  //   isSorted(res, (a, b) => a < b)
+  // )
 
   // def sanity1(): Boolean = {
   //   val h0 = insert(42, Empty)
