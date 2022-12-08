@@ -77,29 +77,6 @@ def getMin(l: List[Node]): (Node, List[Node]) = {
     res._2.content ++ Set(res._1) == l.content
 )
 
-case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
-  require(noDuplicates(graph) && graph.forall(e => noDuplicates(e._2)))
-
-  def distance(u: Int, v: Int): Distance = {
-    graph.get(u).flatMap(_.get(v)) match
-      case None()  => Inf
-      case Some(d) => d
-  }
-
-  def iterate(seen: List[Node], future: List[Node]): List[Node] = {
-    decreases(future.size)
-    future match
-      case Nil() => seen
-      case fu @ Cons(_, _) =>
-        getMin(fu) match
-          case (h, t) =>
-            iterate(h :: seen, t.map(tar => updateDist(this, h, tar)))
-  }
-
-  def dijkstra(start: Int): List[Node] =
-    iterate(Nil[Node](), prepare(this, start))
-}
-
 def prepareProp(
     res: List[Node],
     graph: List[(Int, List[Node])],
@@ -123,15 +100,54 @@ def prepareAux(
     case Cons((v, _), xs) => Cons((v, Inf), prepareAux(xs, start))
 } ensuring (res => prepareProp(res, graph, start))
 
-def prepare(graph: Graph, start: Int): List[Node] = {
-  prepareAux(graph.graph, start)
-} ensuring (res => prepareProp(res, graph.graph, start))
+case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
+  require(noDuplicates(graph) && graph.forall(e => noDuplicates(e._2)))
 
-// update distant to node tar (when at bode cur)
-def updateDist(graph: Graph, cur: Node, tar: Node): Node = {
-  val nd = cur._2 + graph.distance(cur._1, tar._1)
-  (tar._1, if nd <= tar._2 then nd else tar._2)
-} ensuring (_._2 <= tar._2)
+  // distance between nodes
+  def distance(u: Int, v: Int): Distance = {
+    graph.get(u).flatMap(_.get(v)) match
+      case None()  => Inf
+      case Some(d) => d
+  }
+
+  // update distant to node tar (when at bode cur)
+  def updateDist(cur: Node, tar: Node): Node = {
+    val nd = cur._2 + distance(cur._1, tar._1)
+    (tar._1, if nd <= tar._2 then nd else tar._2)
+  } ensuring (_._2 <= tar._2)
+
+  // update distance from cur
+  def iterOnce(cur: Node, rest: List[Node]): List[Node] = {
+    decreases(rest.size)
+    rest match {
+      case Nil()      => Nil()
+      case Cons(h, t) => Cons(updateDist(cur, h), iterOnce(cur, t))
+    }
+  } ensuring (res =>
+    res.size == rest.size &&
+      res.zip(rest).forall((y, x) => y._1 == x._1 && y._2 <= x._2)  // updated dists should be smaller
+  )
+
+  // dijkstra main loop
+  def iterate(seen: List[Node], future: List[Node]): List[Node] = {
+    decreases(future.size)
+    future match
+      case Nil() => seen
+      case fu @ Cons(_, _) =>
+        val (h, t) = getMin(fu)
+        iterate(h :: seen, iterOnce(h, t))
+  } ensuring (res => res.size == seen.size + future.size)
+
+  // init dist queue
+  def prepare(start: Int): List[Node] = {
+    prepareAux(graph, start)
+  } ensuring (res => prepareProp(res, graph, start))
+
+  def dijkstra(start: Int): List[Node] = {
+    iterate(Nil[Node](), prepare(start))
+  }
+
+}
 
 @extern
 def main: Unit = {
