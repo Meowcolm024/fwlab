@@ -52,19 +52,51 @@ extension [A](self: List[(Int, A)]) {
 
 type Node = (Int, Distance)
 
+def minTrans(l: List[Node], m: Node, n: Node): List[Node] = {
+  require(l.forall(z => m._2 <= z._2) && n._2 <= m._2)
+  l match
+    case Nil() => Cons(m, Nil())
+    case Cons(h, t) =>
+      assert(m._2 <= h._2)
+      assert(n._2 <= h._2)
+      Cons(h, minTrans(t, m, n))
+} ensuring (res =>
+  res.size == l.size + 1 &&
+    res.content == l.content ++ Set(m) &&
+    res.forall(z => n._2 <= z._2)
+)
+
+def minInv(l: List[Node], m: Node, n: Node): List[Node] = {
+  require(l.forall(z => m._2 <= z._2) && m._2 <= n._2)
+  l match
+    case Nil() => Cons(n, Nil())
+    case Cons(h, t) =>
+      assert(m._2 <= h._2)
+      Cons(h, minInv(t, m, n))
+} ensuring (res =>
+  res.size == l.size + 1 &&
+    res.content == l.content ++ Set(n) &&
+    res.forall(z => m._2 <= z._2)
+)
+
 def getMinAux(
     min: Node,
     rest: List[Node],
     seen: List[Node]
 ): (Node, List[Node]) = {
+  decreases(rest.size)
+  require(seen.forall(n => min._2 <= n._2))
   rest match
     case Nil() => (min, seen)
-    case Cons(c @ (h, v), xs) =>
-      if v <= min._2 then getMinAux(c, xs, seen ++ Cons(min, Nil()))
-      else getMinAux(min, xs, seen ++ Cons(c, Nil()))
+    case Cons(c, xs) =>
+      if c._2 <= min._2 then getMinAux(c, xs, minTrans(seen, min, c))
+      else getMinAux(min, xs, minInv(seen, min, c))
 } ensuring (res =>
   res._2.size == rest.size + seen.size &&
-    res._2.content ++ Set(res._1) == rest.content ++ seen.content ++ Set(min)
+    res._2.content ++ Set(res._1) == rest.content ++ seen.content ++ Set(
+      min
+    ) &&
+    res._2.forall(n => res._1._2 <= n._2)
 )
 
 def getMin(l: List[Node]): (Node, List[Node]) = {
@@ -74,7 +106,8 @@ def getMin(l: List[Node]): (Node, List[Node]) = {
     case Cons(h, t)     => getMinAux(h, t, Nil[Node]())
 } ensuring (res =>
   res._2.size == l.size - 1 &&
-    res._2.content ++ Set(res._1) == l.content
+    res._2.content ++ Set(res._1) == l.content &&
+  res._2.forall(n => res._1._2 <= n._2)
 )
 
 def prepareProp(
@@ -125,7 +158,11 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
     }
   } ensuring (res =>
     res.size == rest.size &&
-      res.zip(rest).forall((y, x) => y._1 == x._1 && y._2 <= x._2)  // updated dists should be smaller
+      res
+        .zip(rest)
+        .forall((y, x) =>
+          y._1 == x._1 && y._2 <= x._2
+        ) // updated dists should be smaller
   )
 
   // dijkstra main loop
@@ -149,8 +186,14 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
 
 }
 
-@extern
+// @extern
 def main: Unit = {
+  /*
+    graph
+    1 -> (2, 1), (3, 3)
+    2 -> (4, 5), (3, 1)
+    3 -> (4, 2)
+   */
   val g = Graph(
     Cons(
       (1, Cons((2, Real(BigInt(1))), Cons((3, Real(BigInt(3))), Nil()))),
@@ -162,5 +205,9 @@ def main: Unit = {
   )
   assert(g.distance(1, 2) == Real(BigInt(1)))
   assert(g.distance(2, 1) == Inf)
-  println((g.dijkstra(1).get(4) == Some(Real(BigInt(4)))).toString)
+  assert(g.prepare(1).get(1) == Some(Real(0)))
+  assert(g.prepare(1).get(2) == Some(Inf))
+  assert(getMin(g.prepare(1))._1 == 1 -> Real(0))
+  assert(getMin(g.prepare(1))._2.forall(_._2 == Inf))
+  assert(g.iterOnce(1 -> Real(0), g.prepare(1)).get(2) == Some(Real(1)))
 }
