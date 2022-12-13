@@ -120,6 +120,7 @@ def prepareAux(
     graph: List[(Int, List[Node])],
     start: Int
 ): List[Node] = {
+  require(noDuplicates(graph))
   graph match
     case Nil() => Nil()
     case Cons((v, _), xs) if v == start =>
@@ -127,10 +128,15 @@ def prepareAux(
     case Cons((v, _), xs) => Cons((v, Inf), prepareAux(xs, start))
 } ensuring (res => prepareProp(res, graph, start))
 
-case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
-  require(noDuplicates(graph) && graph.forall(e => noDuplicates(e._2)))
+def validGraph(graph: List[(Int, List[(Int, Distance)])]): Boolean =
+  noDuplicates(graph) &&
+    graph.forall(e => noDuplicates(e._2)) &&
+    graph.forall((n, a) => a.forall((i, _) => graph.get(i) != None()))
 
-  // distance between nodes
+case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
+  require(validGraph(graph))
+
+  // direct distance between nodes u -> v
   def distance(u: Int, v: Int): Distance = {
     graph.get(u).flatMap(_.get(v)) match
       case None()  => Inf
@@ -171,10 +177,12 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
 
   // init dist queue
   def prepare(start: Int): List[Node] = {
+    require(graph.get(start) != None())
     prepareAux(graph, start)
   } ensuring (res => prepareProp(res, graph, start))
 
   def dijkstra(start: Int): List[Node] = {
+    require(graph.get(start) != None())
     iterate(Nil[Node](), prepare(start))
   }
 

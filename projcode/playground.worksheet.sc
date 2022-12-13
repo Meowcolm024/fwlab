@@ -137,7 +137,6 @@ def getMin(l: List[Node]): (Node, List[Node]) = {
 //     graph: List[(Int, List[Node])],
 //     start: Int
 // ): Boolean =
-//   given (Distance, Option[Int]) = (null, null)
 //   res.size == graph.size &&
 //   res.map(_._1) == graph.map(_._1) &&
 //   (res.get(start) match {
@@ -216,8 +215,6 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
 
 }
 
-def Cons[A](h: A, t: List[A]) = h :: t
-
 val g = Graph(
   List(
     (1, List(2 -> 1.toDist, 3 -> 3.toDist)),
@@ -228,8 +225,10 @@ val g = Graph(
   )
 )
 
+given (Distance, Option[Int]) = null
+
 val (h, t) = getMin(g.prepare(1))
 
 g.iterOnce(h, t)
 
-g.dijkstra(1)
+g.dijkstra(1).get(4)
