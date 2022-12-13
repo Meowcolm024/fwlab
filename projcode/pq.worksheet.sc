@@ -55,11 +55,8 @@ type Node = (Int, Distance)
 def minTrans(l: List[Node], m: Node, n: Node): List[Node] = {
   require(l.forall(z => m._2 <= z._2) && n._2 <= m._2)
   l match
-    case Nil() => Cons(m, Nil())
-    case Cons(h, t) =>
-      assert(m._2 <= h._2)
-      assert(n._2 <= h._2)
-      Cons(h, minTrans(t, m, n))
+    case Nil()      => Cons(m, Nil())
+    case Cons(h, t) => Cons(h, minTrans(t, m, n))
 } ensuring (res =>
   res.size == l.size + 1 &&
     res.content == l.content ++ Set(m) &&
@@ -69,10 +66,8 @@ def minTrans(l: List[Node], m: Node, n: Node): List[Node] = {
 def minInv(l: List[Node], m: Node, n: Node): List[Node] = {
   require(l.forall(z => m._2 <= z._2) && m._2 <= n._2)
   l match
-    case Nil() => Cons(n, Nil())
-    case Cons(h, t) =>
-      assert(m._2 <= h._2)
-      Cons(h, minInv(t, m, n))
+    case Nil()      => Cons(n, Nil())
+    case Cons(h, t) => Cons(h, minInv(t, m, n))
 } ensuring (res =>
   res.size == l.size + 1 &&
     res.content == l.content ++ Set(n) &&
@@ -93,12 +88,11 @@ def getMinAux(
       else getMinAux(min, xs, minInv(seen, min, c))
 } ensuring (res =>
   res._2.size == rest.size + seen.size &&
-    res._2.content ++ Set(res._1) == rest.content ++ seen.content ++ Set(
-      min
-    ) &&
+    res._2.content ++ Set(res._1) == rest.content ++ seen.content ++ Set(min) &&
     res._2.forall(n => res._1._2 <= n._2)
 )
 
+// extract min from list
 def getMin(l: List[Node]): (Node, List[Node]) = {
   require(l != Nil())
   l match
@@ -107,7 +101,7 @@ def getMin(l: List[Node]): (Node, List[Node]) = {
 } ensuring (res =>
   res._2.size == l.size - 1 &&
     res._2.content ++ Set(res._1) == l.content &&
-  res._2.forall(n => res._1._2 <= n._2)
+    res._2.forall(n => res._1._2 <= n._2)
 )
 
 def prepareProp(
@@ -188,19 +182,12 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
 
 // @extern
 def main: Unit = {
-  /*
-    graph
-    1 -> (2, 1), (3, 3)
-    2 -> (4, 5), (3, 1)
-    3 -> (4, 2)
-   */
   val g = Graph(
-    Cons(
-      (1, Cons((2, Real(BigInt(1))), Cons((3, Real(BigInt(3))), Nil()))),
-      Cons(
-        (2, Cons((4, Real(BigInt(5))), Cons((3, Real(BigInt(1))), Nil()))),
-        Cons((3, Cons((4, Real(BigInt(2))), Nil())), Nil())
-      )
+    List(
+      (1, List(2 -> 1.toDist, 3 -> 3.toDist)),
+      (2, List(4 -> 5.toDist, 3 -> 1.toDist)),
+      (3, List(4 -> 2.toDist)),
+      (4, List())
     )
   )
   assert(g.distance(1, 2) == Real(BigInt(1)))
