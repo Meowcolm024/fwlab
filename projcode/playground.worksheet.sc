@@ -237,11 +237,11 @@ g.iterOnce(h, t)
 
 g.dijkstra(1).get(4)
 
+//==== checker ====
 val dis = g.dijkstra(1).sortBy(x => x._1)
 
 dis(2)
 
-//==== checker ====
 val graph = 
   List(
     (1, List(2 -> 1.toDist, 3 -> 3.toDist)),
