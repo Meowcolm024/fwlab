@@ -256,9 +256,24 @@ val edges = graph.flatMap(
   (ve:(Int, List[(Int, Distance)])) 
     => {ve._2.map((e:(Int, Distance)) => (ve._1, e._1, e._2))})
 
-val edges2 = edges.groupBy(_._2)
+val edges2 = noEmpty(edges.groupBy(_._2), graph)
 
+def noEmpty(edge: Map[Int, List[Tuple3[Int, Int, Distance]]], graph: List[(Int, List[(Int, Distance)])]): 
+  Map[Int, List[Tuple3[Int, Int, Distance]]] = {
+    graph match {
+      case Nil => edge
+      case h::t => {
+        val res = noEmpty(edge, t)
+        if res.contains(h._1) then res else (res + (h._1 -> Nil))
+      }
+    }
+}
+
+edges2(1)
+edges2(2)
 edges2(3)
+edges2(4)
+edges2(5)
 
 def checkEqual(des: Int, rest: List[(Int, Int, Distance)]): Boolean = {
   rest match {
@@ -291,15 +306,18 @@ def checkNode(des: Int, rest: List[(Int, Int, Distance)]): (Boolean, Boolean) = 
   }
 }
 
-def checkGraph(graph: List[(Int, List[Node])]): (Boolean, Boolean) = {
+checkNode(2, edges2(2))
+
+def checkGraph(graph: List[(Int, List[(Int, Distance)])]): (Boolean, Boolean) = {
   graph match {
     case Nil => (true, true)
     case h::t => {
       val res = checkGraph(t)
       val cur = checkNode(h._1, edges2(h._1))
-      (res._1 && cur._1, res._2 && cur._2)
+      (res._1 && (cur._1 || edges2(h._1) == Nil), res._2 && cur._2)
     }
   }
 }
 
+checkNode(1, edges2(1))
 checkGraph(graph)
