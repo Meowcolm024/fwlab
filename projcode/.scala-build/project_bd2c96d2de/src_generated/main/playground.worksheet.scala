@@ -1,4 +1,9 @@
-def decreases[A](a: A): Unit = ()
+
+
+
+
+object `playground.worksheet` {
+/*<script>*/def decreases[A](a: A): Unit = ()
 
 extension [A](l: List[A]) {
   def content: Set[A] = l.toSet
@@ -24,9 +29,6 @@ extension (self: Distance) {
   def +(that: Distance): Distance = (self, that) match
     case (Real(l), Real(r)) => Real(l + r)
     case _                  => Inf
-  
-  def <=(that: Distance): Boolean = self < that || self == that
-  
 }
 
 // def noDuplicates[A](l: List[(Int, A)]): Boolean = l match {
@@ -216,7 +218,6 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
     iterate(Nil, prepare(start))
   }
 
-
 }
 
 val g = Graph(
@@ -236,70 +237,23 @@ val (h, t) = getMin(g.prepare(1))
 g.iterOnce(h, t)
 
 g.dijkstra(1).get(4)
+/*</script>*/ /*<generated>*/
+def args = `playground.worksheet_sc`.args$
+  /*</generated>*/
+}
 
-val dis = g.dijkstra(1).sortBy(x => x._1)
-
-dis(2)
-
-//==== checker ====
-val graph = 
-  List(
-    (1, List(2 -> 1.toDist, 3 -> 3.toDist)),
-    (2, List(4 -> 5.toDist, 3 -> 1.toDist)),
-    (3, List(4 -> 2.toDist)),
-    (4, Nil),
-    (5, List(4 -> 2.toDist))
-  )
-
-// edge:(Int, Int, Distance) = (from, to, length)
-val edges = graph.flatMap(
-  (ve:(Int, List[(Int, Distance)])) 
-    => {ve._2.map((e:(Int, Distance)) => (ve._1, e._1, e._2))})
-
-val edges2 = edges.groupBy(_._2)
-
-edges2(3)
-
-def checkEqual(des: Int, rest: List[(Int, Int, Distance)]): Boolean = {
-  rest match {
-    case Nil => false
-    case h::t => {
-      checkEqual(des, t) || dis(des)._2 == dis(h._1)._2 + h._3
-    }
+object `playground.worksheet_sc` {
+  private var args$opt0 = Option.empty[Array[String]]
+  def args$set(args: Array[String]): Unit = {
+    args$opt0 = Some(args)
+  }
+  def args$opt: Option[Array[String]] = args$opt0
+  def args$: Array[String] = args$opt.getOrElse {
+    sys.error("No arguments passed to this script")
+  }
+  def main(args: Array[String]): Unit = {
+    args$set(args)
+    `playground.worksheet`.hashCode() // hasCode to clear scalac warning about pure expression in statement position
   }
 }
 
-def checkLess(des: Int, rest: List[(Int, Int, Distance)]): Boolean = {
-  rest match {
-    case Nil => true
-    case h::t => {
-      checkLess(des, t) && dis(des)._2 <= dis(h._1)._2 + h._3
-    }
-  }
-}
-
-def checkNode(des: Int, rest: List[(Int, Int, Distance)]): (Boolean, Boolean) = {
-  //decreases(rest.size)
-  rest match {
-    case Nil => (false, true)
-    case h::t => {
-      val res = checkNode(des, t)
-      val res1 = (res._1 || (dis(des - 1)._2 == dis(h._1 - 1)._2 + h._3))
-      val res2 = (res._2 && (dis(des - 1)._2 <= dis(h._1 - 1)._2 + h._3))
-      (res1, res2)
-    }
-  }
-}
-
-def checkGraph(graph: List[(Int, List[Node])]): (Boolean, Boolean) = {
-  graph match {
-    case Nil => (true, true)
-    case h::t => {
-      val res = checkGraph(t)
-      val cur = checkNode(h._1, edges2(h._1))
-      (res._1 && cur._1, res._2 && cur._2)
-    }
-  }
-}
-
-checkGraph(graph)
