@@ -60,6 +60,7 @@ def minTrans(l: List[Node], m: Node, n: Node): List[Node] = {
 } ensuring (res =>
   res.size == l.size + 1 &&
     res.content == l.content ++ Set(m) &&
+    res.map(_._1).content == l.map(_._1).content ++ Set(m._1) &&
     res.forall(z => n._2 <= z._2)
 )
 
@@ -71,6 +72,7 @@ def minInv(l: List[Node], m: Node, n: Node): List[Node] = {
 } ensuring (res =>
   res.size == l.size + 1 &&
     res.content == l.content ++ Set(n) &&
+    res.map(_._1).content == l.map(_._1).content ++ Set(n._1) &&
     res.forall(z => m._2 <= z._2)
 )
 
@@ -89,6 +91,9 @@ def getMinAux(
 } ensuring (res =>
   res._2.size == rest.size + seen.size &&
     res._2.content ++ Set(res._1) == rest.content ++ seen.content ++ Set(min) &&
+    res._2.map(_._1).content ++ Set(res._1._1) == rest.map(_._1).content ++ seen
+      .map(_._1)
+      .content ++ Set(min._1) &&
     res._2.forall(n => res._1._2 <= n._2)
 )
 
@@ -101,6 +106,7 @@ def getMin(l: List[Node]): (Node, List[Node]) = {
 } ensuring (res =>
   res._2.size == l.size - 1 &&
     res._2.content ++ Set(res._1) == l.content &&
+    res._2.map(_._1).content ++ Set(res._1._1) == l.map(_._1).content &&
     res._2.forall(n => res._1._2 <= n._2)
 )
 
@@ -110,6 +116,7 @@ def prepareProp(
     start: Int
 ): Boolean =
   res.size == graph.size &&
+    res.map(_._1).content == graph.map(_._1).content &&
     res.map(_._1) == graph.map(_._1) &&
     (res.get(start) match {
       case Some(d) => d == Real(0)
@@ -131,7 +138,15 @@ def prepareAux(
 def validGraph(graph: List[(Int, List[(Int, Distance)])]): Boolean =
   noDuplicates(graph) &&
     graph.forall(e => noDuplicates(e._2)) &&
-    graph.forall((n, a) => a.forall((i, _) => graph.get(i) != None()))
+    graph.forall { case (n, a) =>
+      a.forall((i, _) => graph.get(i) != None())
+    } &&
+    graph.forall { case (n, a) =>
+      a.get(n) match {
+        case None()  => true
+        case Some(d) => d == 0.toDist
+      }
+    }
 
 case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
   require(validGraph(graph))
@@ -157,7 +172,8 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
       case Cons(h, t) => Cons(updateDist(cur, h), iterOnce(cur, t))
     }
   } ensuring (res =>
-    res.size == rest.size &&
+    res.map(_._1).content == rest.map(_._1).content &&
+      res.size == rest.size &&
       res
         .zip(rest)
         .forall((y, x) =>
@@ -165,15 +181,44 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
         ) // updated dists should be smaller
   )
 
+  def itInv(seen: List[Node]): Boolean =
+    seen.forall { h =>
+      seen.forall { case (n, d) =>
+        graph.get(n).flatMap(_.get(h._1)) match {
+          case None()   => true
+          case Some(d1) => h._2 <= d1 + d
+        }
+      }
+    }
+
   // dijkstra main loop
   def iterate(seen: List[Node], future: List[Node]): List[Node] = {
     decreases(future.size)
+    require(
+      seen.map(_._1).content ++ future.map(_._1).content == graph
+        .map(_._1)
+        .content
+    )
+    // require(itInv(seen))
     future match
       case Nil() => seen
       case fu @ Cons(_, _) =>
         val (h, t) = getMin(fu)
+        // assert(seen.forall { case (n, d) =>
+        //   graph.get(n).flatMap(_.get(h._1)) match {
+        //     case None()   => true
+        //     case Some(d1) => h._2 <= d1 + d
+        //   }
+        // })
         iterate(h :: seen, iterOnce(h, t))
-  } ensuring (res => res.size == seen.size + future.size)
+  } ensuring (res =>
+    seen.map(_._1).content ++ future.map(_._1).content == res
+      .map(_._1)
+      .content &&
+      res.map(_._1).content == graph.map(_._1).content &&
+      res.size == seen.size + future.size /* &&
+      itInv(res) */
+  )
 
   // init dist queue
   def prepare(start: Int): List[Node] = {
@@ -195,7 +240,8 @@ def main: Unit = {
       (1, List(2 -> 1.toDist, 3 -> 3.toDist)),
       (2, List(4 -> 5.toDist, 3 -> 1.toDist)),
       (3, List(4 -> 2.toDist)),
-      (4, List())
+      (4, List()),
+      (5, List(4 -> 2.toDist))
     )
   )
   assert(g.distance(1, 2) == Real(BigInt(1)))
