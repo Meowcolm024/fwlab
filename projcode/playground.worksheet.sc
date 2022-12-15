@@ -161,6 +161,22 @@ def prepareAux(
 case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
 //   require(noDuplicates(graph) && graph.forall(e => noDuplicates(e._2)))
 
+  val edges = graph.flatMap(
+    (ve:(Int, List[(Int, Distance)])) 
+      => {ve._2.map((e:(Int, Distance)) => (ve._1, e._1, e._2))})
+  
+  val edges2 = noEmpty(edges.groupBy(_._2), graph)
+  
+  def noEmpty(edge: Map[Int, List[Tuple3[Int, Int, Distance]]], graph: List[(Int, List[(Int, Distance)])]): 
+    Map[Int, List[Tuple3[Int, Int, Distance]]] = {
+      graph match {
+        case Nil => edge
+        case h::t => {
+          val res = noEmpty(edge, t)
+          if res.contains(h._1) then res else (res + (h._1 -> Nil))
+        }
+      }
+  }
   // distance between nodes
   def distance(u: Int, v: Int): Distance = {
     graph.get(u).flatMap(_.get(v)) match
@@ -191,6 +207,25 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
         ) // updated dists should be smaller
   ) */
 
+  // return value: (Boolean, Boolean) = (Equal, Lessthan)
+  def checkNodeIte(seen: List[Node], to: Int, rest_from: List[(Int, Int, Distance)]): (Boolean, Boolean) = {
+    decreases(rest_from.size)
+    rest_from match
+      case Nil => (if to == sourceNode then true else false, true)
+      case h::t => {
+        val res = checkNodeIte(seen, to, t)
+        val Some(cur_dis, _) = seen.get(to)
+        val isVisited = seen.get(h._1)
+        val cur = isVisited match {
+          case None => (false, true)
+          case Some(par_dis, _) =>
+            (cur_dis == par_dis + h._3, cur_dis <= par_dis + h._3)
+        }
+        (res._1 || cur._1, res._2 && cur._2)
+        //val cur = if from == h._1 then dis.get(to) == dis.get(from) + h._3
+      }
+  }
+
   // dijkstra main loop
   def iterate(seen: List[Node], future: List[Node]): List[Node] = {
     decreases(future.size)
@@ -198,8 +233,10 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
       case Nil => seen
       case fu @ (_ :: _) =>
         val (h, t) = getMin(fu)
+        val checkCur = checkNodeIte(h::seen, h._1, edges2(h._1))
+        assert(checkCur._1 && checkCur._2)
         iterate(h :: seen, iterOnce(h, t))
-  } // ensuring (res => res.size == seen.size + future.size)
+  } ensuring (res => res.size == seen.size + future.size)
 
   // init dist queue
   def prepare(start: Int): List[Node] = {
@@ -316,6 +353,7 @@ def checkGraph(graph: List[(Int, List[(Int, Distance)])]): (Boolean, Boolean) = 
     case Nil => (true, true)
     case h::t => {
       val res = checkGraph(t)
+      //assert(res._1 && res._2)
       val cur = checkNode(h._1, edges2(h._1))
       //(res._1 && (cur._1 || edges2(h._1) == Nil), res._2 && cur._2)
       (res._1 && cur._1, res._2 && cur._2)
