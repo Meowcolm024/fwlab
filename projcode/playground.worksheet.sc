@@ -208,12 +208,12 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
   ) */
 
   // return value: (Boolean, Boolean) = (Equal, Lessthan)
-  def checkNodeIte(seen: List[Node], to: Int, rest_from: List[(Int, Int, Distance)]): (Boolean, Boolean) = {
+  def checkNodeIte(seen: List[Node], to: Int, rest_from: List[(Int, Int, Distance)], sourceNode: Int): (Boolean, Boolean) = {
     decreases(rest_from.size)
     rest_from match
       case Nil => (if to == sourceNode then true else false, true)
       case h::t => {
-        val res = checkNodeIte(seen, to, t)
+        val res = checkNodeIte(seen, to, t, sourceNode)
         val Some(cur_dis, _) = seen.get(to)
         val isVisited = seen.get(h._1)
         val cur = isVisited match {
@@ -222,20 +222,19 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
             (cur_dis == par_dis + h._3, cur_dis <= par_dis + h._3)
         }
         (res._1 || cur._1, res._2 && cur._2)
-        //val cur = if from == h._1 then dis.get(to) == dis.get(from) + h._3
       }
   }
 
   // dijkstra main loop
-  def iterate(seen: List[Node], future: List[Node]): List[Node] = {
+  def iterate(seen: List[Node], future: List[Node], sourceNode: Int): List[Node] = {
     decreases(future.size)
     future match
       case Nil => seen
       case fu @ (_ :: _) =>
         val (h, t) = getMin(fu)
-        val checkCur = checkNodeIte(h::seen, h._1, edges2(h._1))
+        val checkCur = checkNodeIte(h::seen, h._1, edges2(h._1), sourceNode)
         assert(checkCur._1 && checkCur._2)
-        iterate(h :: seen, iterOnce(h, t))
+        iterate(h :: seen, iterOnce(h, t), sourceNode)
   } ensuring (res => res.size == seen.size + future.size)
 
   // init dist queue
@@ -250,7 +249,7 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
   ) */
 
   def dijkstra(start: Int): List[Node] = {
-    iterate(Nil, prepare(start))
+    iterate(Nil, prepare(start), start)
   }
 
 
@@ -316,7 +315,7 @@ edges2(5)
 
 def checkEqual(des: Int, rest: List[(Int, Int, Distance)]): Boolean = {
   rest match {
-    case Nil => false
+    case Nil => if des == sourceNode then true else false
     case h::t => {
       checkEqual(des, t) || dis(des)._2 == dis(h._1)._2 + h._3
     }
