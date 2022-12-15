@@ -231,14 +231,16 @@ val g = Graph(
 
 given (Distance, Option[Int]) = null
 
-val (h, t) = getMin(g.prepare(1))
+val sourceNode = 2
+
+val (h, t) = getMin(g.prepare(sourceNode))
 
 g.iterOnce(h, t)
 
-g.dijkstra(1).get(4)
+g.dijkstra(sourceNode).get(4)
 
 //==== checker ====
-val dis = g.dijkstra(1).sortBy(x => x._1)
+val dis = g.dijkstra(sourceNode).sortBy(x => x._1)
 
 dis(2)
 
@@ -296,7 +298,8 @@ def checkLess(des: Int, rest: List[(Int, Int, Distance)]): Boolean = {
 def checkNode(des: Int, rest: List[(Int, Int, Distance)]): (Boolean, Boolean) = {
   //decreases(rest.size)
   rest match {
-    case Nil => (false, true)
+    case Nil => (if (dis(des - 1)._2 == Inf || des == sourceNode) then true else false, true)
+    //case Nil => (false, true)
     case h::t => {
       val res = checkNode(des, t)
       val res1 = (res._1 || (dis(des - 1)._2 == dis(h._1 - 1)._2 + h._3))
@@ -314,10 +317,15 @@ def checkGraph(graph: List[(Int, List[(Int, Distance)])]): (Boolean, Boolean) = 
     case h::t => {
       val res = checkGraph(t)
       val cur = checkNode(h._1, edges2(h._1))
-      (res._1 && (cur._1 || edges2(h._1) == Nil), res._2 && cur._2)
+      //(res._1 && (cur._1 || edges2(h._1) == Nil), res._2 && cur._2)
+      (res._1 && cur._1, res._2 && cur._2)
     }
   }
 }
 
 checkNode(1, edges2(1))
+checkNode(2, edges2(2))
+checkNode(3, edges2(3))
+checkNode(4, edges2(4))
+checkNode(5, edges2(5))
 checkGraph(graph)
