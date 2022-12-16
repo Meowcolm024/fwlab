@@ -19,9 +19,11 @@ extension (self: Distance) {
     case (Inf, Real(_))     => false
     case (Real(l), Real(r)) => l <= r
 
-  def +(that: Distance): Distance = (self, that) match
-    case (Real(l), Real(r)) => Real(l + r)
-    case _                  => Inf
+  def +(that: Distance): Distance = {
+    (self, that) match
+      case (Real(l), Real(r)) => Real(l + r)
+      case _                  => Inf
+  } ensuring (res => self <= res && that <= res)
 }
 
 def noDuplicates[A](l: List[(Int, A)]): Boolean = l match {
@@ -138,9 +140,8 @@ def prepareAux(
 def validGraph(graph: List[(Int, List[(Int, Distance)])]): Boolean =
   noDuplicates(graph) &&
     graph.forall(e => noDuplicates(e._2)) &&
-    graph.forall { case (n, a) =>
-      a.forall((i, _) => graph.get(i) != None())
-    } &&
+    graph.forall(e => e._2.forall((i, _) => graph.get(i) != None())) &&
+    graph.forall(n => n._2.forall(z => 0.toDist <= z._2)) &&
     graph.forall { case (n, a) =>
       a.get(n) match {
         case None()  => true
@@ -160,19 +161,22 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
 
   // update distant to node tar (when at bode cur)
   def updateDist(cur: Node, tar: Node): Node = {
+    require(cur._2 <= tar._2)
     val nd = cur._2 + distance(cur._1, tar._1)
     (tar._1, if nd <= tar._2 then nd else tar._2)
-  } ensuring (_._2 <= tar._2)
+  } ensuring (res => res._2 <= tar._2 && cur._2 <= res._2)
 
   // update distance from cur
   def iterOnce(cur: Node, rest: List[Node]): List[Node] = {
     decreases(rest.size)
+    require(rest.forall(n => cur._2 <= n._2))
     rest match {
       case Nil()      => Nil()
       case Cons(h, t) => Cons(updateDist(cur, h), iterOnce(cur, t))
     }
   } ensuring (res =>
-    res.map(_._1).content == rest.map(_._1).content &&
+    res.forall(n => cur._2 <= n._2) &&
+      res.map(_._1).content == rest.map(_._1).content &&
       res.size == rest.size &&
       res
         .zip(rest)
@@ -204,12 +208,6 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
       case Nil() => seen
       case fu @ Cons(_, _) =>
         val (h, t) = getMin(fu)
-        // assert(seen.forall { case (n, d) =>
-        //   graph.get(n).flatMap(_.get(h._1)) match {
-        //     case None()   => true
-        //     case Some(d1) => h._2 <= d1 + d
-        //   }
-        // })
         iterate(h :: seen, iterOnce(h, t))
   } ensuring (res =>
     seen.map(_._1).content ++ future.map(_._1).content == res
