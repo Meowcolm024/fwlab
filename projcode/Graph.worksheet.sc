@@ -1,151 +1,147 @@
-trait Ord[A] {
-  extension (self: A)
-    def <(that: A): Boolean
-    def ===(that: A): Boolean = self == that
-    def <=(that: A): Boolean = self === that || self < that
+sealed abstract class Distance
+case object Inf extends Distance
+case class Real(i: BigInt) extends Distance
+
+extension (i: BigInt) {
+  def toDist: Distance =
+    Real(i)
 }
 
-type Node = String
+extension (self: Distance) {
+  def <=(that: Distance): Boolean = (self, that) match
+    case (Inf, Inf)         => true
+    case (Real(_), Inf)     => true
+    case (Inf, Real(_))     => false
+    case (Real(l), Real(r)) => l <= r
 
-enum Distance {
-  case R(i: Int)
-  case I
-
-  def +(that: Distance): Distance = (this, that) match
-    case (_, I)       => I
-    case (I, _)       => I
-    case (R(i), R(j)) => R(i + j)
-
-  override def toString: String = this match
-    case Distance.R(i) => i.toString
-    case Distance.I    => "inf"
-
+  def +(that: Distance): Distance = {
+    (self, that) match
+      case (Real(l), Real(r)) => Real(l + r)
+      case _                  => Inf
+  }
 }
 
-given Ord[Distance] with {
-  import Distance._
-  extension (self: Distance)
-    def <(that: Distance): Boolean = (self, that) match
-      case (I, I)       => false
-      case (I, R(_))    => false
-      case (R(_), I)    => true
-      case (R(i), R(j)) => i < j
+def noDuplicates[A](l: List[(Int, A)]): Boolean = l match {
+  case Nil          => true
+  case (k, v) :: xs => (xs.get(k) == None) && noDuplicates(xs)
 }
 
-enum Heap[+A] {
-  case Empty
-  case Vertex(h: A, t: List[Heap[A]])
-
-  def size: Int = this match
-    case Empty        => 0
-    case Vertex(h, t) => 1 + t.map(_.size).sum
-}
-
-object Heap {
-  def merge[A: Ord](left: Heap[A], right: Heap[A]): Heap[A] =
-    (left, right) match
-      case (Empty, h) => h
-      case (h, Empty) => h
-      case (Vertex(h1, t1), Vertex(h2, t2)) =>
-        if h1 < h2 then Vertex(h1, right :: t1) else Vertex(h2, left :: t2)
-
-  def insert[A: Ord](v: A, h: Heap[A]): Heap[A] =
-    merge(Vertex(v, Nil), h)
-
-  def insHeap[A: Ord](h: Heap[A], t: List[Heap[A]]): Heap[A] =
-    t.foldRight(h)(merge)
-
-  def extractMin[A: Ord](h: Heap[A]): Option[(A, Heap[A])] = h match
-    case Empty              => None
-    case Vertex(h, Nil)     => Some(h -> Empty)
-    case Vertex(h, x :: xs) => Some(h -> insHeap(x, xs))
-
-  def apply[A: Ord](xs: A*): Heap[A] = xs.toList.toHeap
-
-  extension [A: Ord](self: Heap[A]) {
-    def toList: List[A] = Heap.extractMin(self) match
-      case None         => Nil
-      case Some(h -> t) => h :: t.toList
-
-    def forget: List[A] = self match
-      case Empty        => Nil
-      case Vertex(h, t) => h :: t.flatMap(_.forget)
+extension [A](self: List[(Int, A)]) {
+  def update(x: (Int, A)): List[(Int, A)] = {
+    self match
+      case Nil                      => Nil
+      case (i, v) :: t if i == x._1 => (i, x._2) :: t
+      case h :: t                   => h :: t.update(x)
   }
 
-  extension [A: Ord](self: List[A]) {
-    def toHeap: Heap[A] = self.foldRight(Empty: Heap[A])(insert)
+  def get(i: Int): Option[A] = self match
+    case Nil         => None
+    case (h, v) :: t => if h == i then Some(v) else t.get(i)
+}
+
+type Node = (Int, Distance)
+
+def minTrans(l: List[Node], m: Node, n: Node): List[Node] = {
+  require(l.forall(z => m._2 <= z._2) && n._2 <= m._2)
+  l match
+    case Nil    => m :: Nil
+    case h :: t => h :: minTrans(t, m, n)
+}
+
+def minInv(l: List[Node], m: Node, n: Node): List[Node] = {
+  require(l.forall(z => m._2 <= z._2) && m._2 <= n._2)
+  l match
+    case Nil    => n :: Nil
+    case h :: t => h :: minInv(t, m, n)
+}
+
+def getMinAux(
+    min: Node,
+    rest: List[Node],
+    seen: List[Node]
+): (Node, List[Node]) = {
+  rest match
+    case Nil => (min, seen)
+    case c :: xs =>
+      if c._2 <= min._2 then getMinAux(c, xs, minTrans(seen, min, c))
+      else getMinAux(min, xs, minInv(seen, min, c))
+}
+
+// extract min from list
+def getMin(l: List[Node]): (Node, List[Node]) = {
+  l match
+    case h :: Nil => (h, Nil)
+    case h :: t   => getMinAux(h, t, Nil)
+}
+
+def prepareAux(
+    graph: List[(Int, List[Node])],
+    start: Int
+): List[Node] = {
+  graph match
+    case Nil => Nil
+    case (v, _) :: xs if v == start =>
+      (v, Real(0)) :: prepareAux(xs, start)
+    case (v, _) :: xs => (v, Inf) :: prepareAux(xs, start)
+}
+
+case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
+
+  // direct distance between nodes u -> v
+  def distance(u: Int, v: Int): Distance = {
+    graph.get(u).flatMap(_.get(v)) match
+      case None    => Inf
+      case Some(d) => d
   }
 
-}
+  // update distant to node tar (when at bode cur)
+  def updateDist(cur: Node, tar: Node): Node = {
+    val nd = cur._2 + distance(cur._1, tar._1)
+    (tar._1, if nd <= tar._2 then nd else tar._2)
+  } ensuring (res => res._2 <= tar._2 && cur._2 <= res._2)
 
-import Heap.toHeap
-def sort[A:Ord](l: List[A]):List[A] = l.toHeap.toList
+  // update distance from cur
+  def iterOnce(cur: Node, rest: List[Node]): List[Node] = {
+    rest match {
+      case Nil    => Nil
+      case h :: t => updateDist(cur, h) :: iterOnce(cur, t)
+    }
+  }
 
-case class Assoc(n: Node, d: Distance) {
-  override def toString: String = s"$n -> $d"
-}
+  // dijkstra main loop
+  def iterate(seen: List[Node], future: List[Node]): List[Node] = {
+    future match
+      case Nil => seen
+      case fu =>
+        val (h, t) = getMin(fu)
+        iterate(h :: seen, iterOnce(h, t))
+  }
 
-given Ord[Int] with {
-  extension (self: Int) def <(that: Int): Boolean = self < that
-}
+  // init dist queue
+  def prepare(start: Int): List[Node] =
+    prepareAux(graph, start)
 
-given Ord[Assoc] with {
-  extension (self: Assoc) def <(that: Assoc): Boolean = self.d < that.d
-}
-
-case class Graph(graph: Map[Node, Map[Node, Distance]]) {
-  import Heap.toHeap
-  import Distance._
-
-  def dijkstra(src: Node): List[Assoc] =
-    def go(res: List[Assoc])(q: Heap[Assoc]): List[Assoc] =
-      Heap.extractMin(q) match
-        case None => res
-        case Some((h @ Assoc(nu, du), tl)) =>
-          def f(e: Assoc) = graph.get(nu).flatMap(_.get(e.n)) match
-            case None    => e
-            case Some(w) => Assoc(e.n, if du + w < e.d then du + w else e.d)
-          go(h :: res)(tl.forget.map(f).toHeap)
-
-    go(Nil)(
-      graph.keys.toList
-        .map(n => Assoc(n, if n == src then R(0) else I))
-        .toHeap
-    )
+  def dijkstra(start: Int): List[Node] =
+    iterate(Nil, prepare(start))
 
 }
 
-object Graph {
-  def ins(xs: List[(Node, Node, Distance)])(
-      g: Map[Node, Map[Node, Distance]]
-  ): Map[Node, Map[Node, Distance]] =
-    xs match
-      case Nil => g
-      case (u, v, w) :: next =>
-        ins(next)(
-          g.updatedWith(u) {
-            case None    => Some(Map(v -> w))
-            case Some(m) => Some(m.updated(v, w))
-          }
-        )
+val g = Graph(
+  List(
+    (1, List(2 -> 1.toDist, 3 -> 3.toDist)),
+    (2, List(4 -> 5.toDist, 3 -> 1.toDist)),
+    (3, List(4 -> 2.toDist)),
+    (4, List()),
+    (5, List(4 -> 2.toDist))
+  )
+)
 
-  def apply(vertices: (Node, Node, Int)*): Graph =
-    Graph(
-      ins(vertices.map((a, b, c) => (a, b, Distance.R(c))).toList)(Map.empty)
-    )
-}
+assert(g.distance(1, 2) == Real(BigInt(1)))
+assert(g.distance(2, 1) == Inf)
+assert(g.prepare(1).get(1) == Some(Real(0)))
+assert(g.prepare(1).get(2) == Some(Inf))
+assert(getMin(g.prepare(1))._1 == 1 -> Real(0))
+assert(getMin(g.prepare(1))._2.forall(_._2 == Inf))
+assert(g.iterOnce(1 -> Real(0), g.prepare(1)).get(2) == Some(Real(1)))
 
-val test = Graph(
-  ("a", "b", 10),
-  ("a", "c", 5),
-  ("b", "c", 2),
-  ("c", "b", 3),
-  ("b", "d", 1),
-  ("c", "d", 9),
-  ("c", "e", 2),
-  ("d", "e", 4),
-  ("e", "d", 6),
-  ("e", "a", 7)
-).dijkstra("a")
-
-sort(List(1, 1, 4, 5, 1, 4, 114514))
+g.dijkstra(1)

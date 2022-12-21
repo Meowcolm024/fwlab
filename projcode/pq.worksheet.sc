@@ -185,15 +185,15 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
         ) // updated dists should be smaller
   )
 
-  def itInv(seen: List[Node]): Boolean =
-    seen.forall { h =>
-      seen.forall { case (n, d) =>
-        graph.get(n).flatMap(_.get(h._1)) match {
-          case None()   => true
-          case Some(d1) => h._2 <= d1 + d
-        }
-      }
-    }
+  // def itInv(seen: List[Node]): Boolean =
+  //   seen.forall { h =>
+  //     seen.forall { case (n, d) =>
+  //       graph.get(n).flatMap(_.get(h._1)) match {
+  //         case None()   => true
+  //         case Some(d1) => h._2 <= d1 + d
+  //       }
+  //     }
+  //   }
 
   // dijkstra main loop
   def iterate(seen: List[Node], future: List[Node]): List[Node] = {
