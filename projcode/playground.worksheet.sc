@@ -207,23 +207,55 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
         ) // updated dists should be smaller
   ) */
 
-  // return value: (Boolean, Boolean) = (Equal, Lessthan)
+  def checkNode1(seen: List[Node], to: Int, rest_from: List[(Int, Int, Distance)], sourceNode: Int): Boolean = {
+    assert(seen.get(to) != None)        // assert we can find curent node in seen[]
+    val Some(cur_dis, _) = seen.get(to) // cur_dis = dis[to]
+    val res1 = rest_from.forall((par, _, len) => seen.get(par) match {
+          case None => true
+          case Some(par_dis, _) => cur_dis <= par_dis + len })
+    assert(res1)
+    res1
+  }
+
+  def checkNode2(seen: List[Node], to: Int, rest_from: List[(Int, Int, Distance)], sourceNode: Int): Boolean = {
+    assert(seen.get(to) != None)        // assert we can find curent node in seen[]
+    val Some(cur_dis, _) = seen.get(to) // cur_dis = dis[to]
+    val res2 = rest_from.exists((par, _, len) => seen.get(par) match {
+          case None => false
+          case Some(par_dis, _) => cur_dis == par_dis + len})
+    val res3 = if cur_dis == Inf || to == sourceNode then true else false
+    assert(res2 || res3)
+    res2 || res3
+  }
+
+  // return value: (Boolean, Boolean) = (Equal, LessEqualthan)
   def checkNodeIte(seen: List[Node], to: Int, rest_from: List[(Int, Int, Distance)], sourceNode: Int): (Boolean, Boolean) = {
     decreases(rest_from.size)
+    assert(seen.get(to) != None)        // assert we can find curent node in seen[]
+    val Some(cur_dis, _) = seen.get(to) // cur_dis = dis[to]
+    //assert(cur_dis != Inf)
+
     rest_from match
-      case Nil => (if to == sourceNode then true else false, true)
+      case Nil => (if to == sourceNode || cur_dis == Inf then true else false, true)
       case h::t => {
+        // h = any previous node
+        // to = the node we'r checking, the destination of current edge(h, to)
         val res = checkNodeIte(seen, to, t, sourceNode)
-        val Some(cur_dis, _) = seen.get(to)
-        val isVisited = seen.get(h._1)
+        // res = the result of the rest edges to NODE_TO
+        assert(res._2)  // assert the LessEqualThan is valid
+
+        
+        val isVisited = seen.get(h._1)      // get node(h) in seen[]
         val cur = isVisited match {
           case None => (false, true)
           case Some(par_dis, _) =>
             (cur_dis == par_dis + h._3, cur_dis <= par_dis + h._3)
         }
+        assert(cur._2)
         (res._1 || cur._1, res._2 && cur._2)
       }
   }
+
 
   // dijkstra main loop
   def iterate(seen: List[Node], future: List[Node], sourceNode: Int): List[Node] = {
@@ -232,8 +264,14 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
       case Nil => seen
       case fu @ (_ :: _) =>
         val (h, t) = getMin(fu)
+        val checkCur1 = (checkNode1(h::seen, h._1, edges2(h._1), sourceNode))
+        val checkCur2 = (checkNode2(h::seen, h._1, edges2(h._1), sourceNode))
+        assert(checkCur1)
+        assert(checkCur2)
         val checkCur = checkNodeIte(h::seen, h._1, edges2(h._1), sourceNode)
-        assert(checkCur._1 && checkCur._2)
+        assert(checkCur._1)
+        assert(checkCur._2)
+        //assert(checkCur._1 && checkCur._2)
         iterate(h :: seen, iterOnce(h, t), sourceNode)
   } ensuring (res => res.size == seen.size + future.size)
 
