@@ -108,8 +108,20 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
     }
   }
 
+  def itInv(seen: List[Node]): Boolean =
+    seen.forall { case (m, d0) =>
+      seen.forall { case (n, d) =>
+        n == m ||
+        (graph.get(n).flatMap(_.get(m)) match
+          case None     => true
+          case Some(d1) => d0 <= d1 + d
+        )
+      }
+    }
+
   // dijkstra main loop
   def iterate(seen: List[Node], future: List[Node]): List[Node] = {
+    require(itInv(seen))
     future match
       case Nil => seen
       case fu =>

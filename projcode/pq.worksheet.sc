@@ -232,21 +232,21 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
 }
 
 // @extern
-def main: Unit = {
-  val g = Graph(
-    List(
-      (1, List(2 -> 1.toDist, 3 -> 3.toDist)),
-      (2, List(4 -> 5.toDist, 3 -> 1.toDist)),
-      (3, List(4 -> 2.toDist)),
-      (4, List()),
-      (5, List(4 -> 2.toDist))
-    )
-  )
-  assert(g.distance(1, 2) == Real(BigInt(1)))
-  assert(g.distance(2, 1) == Inf)
-  assert(g.prepare(1).get(1) == Some(Real(0)))
-  assert(g.prepare(1).get(2) == Some(Inf))
-  assert(getMin(g.prepare(1))._1 == 1 -> Real(0))
-  assert(getMin(g.prepare(1))._2.forall(_._2 == Inf))
-  assert(g.iterOnce(1 -> Real(0), g.prepare(1)).get(2) == Some(Real(1)))
-}
+// def main: Unit = {
+//   val g = Graph(
+//     List(
+//       (1, List(2 -> 1.toDist, 3 -> 3.toDist)),
+//       (2, List(4 -> 5.toDist, 3 -> 1.toDist)),
+//       (3, List(4 -> 2.toDist)),
+//       (4, List()),
+//       (5, List(4 -> 2.toDist))
+//     )
+//   )
+//   assert(g.distance(1, 2) == Real(BigInt(1)))
+//   assert(g.distance(2, 1) == Inf)
+//   assert(g.prepare(1).get(1) == Some(Real(0)))
+//   assert(g.prepare(1).get(2) == Some(Inf))
+//   assert(getMin(g.prepare(1))._1 == 1 -> Real(0))
+//   assert(getMin(g.prepare(1))._2.forall(_._2 == Inf))
+//   assert(g.iterOnce(1 -> Real(0), g.prepare(1)).get(2) == Some(Real(1)))
+// }
