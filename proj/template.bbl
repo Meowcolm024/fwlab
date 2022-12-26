@@ -1,3 +1,7 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
+
+\bibitem{BibliographyManagementLaTeX}
+{Bibliography management in LaTeX}.
+\newblock https://overleaf.com/learn/latex/Bibliography\_management\_in\_LaTeX.
 
 \end{thebibliography}

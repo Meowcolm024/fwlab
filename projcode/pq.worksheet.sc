@@ -103,8 +103,7 @@ def getMinAux(
 def getMin(l: List[Node]): (Node, List[Node]) = {
   require(l != Nil())
   l match
-    case Cons(h, Nil()) => (h, Nil())
-    case Cons(h, t)     => getMinAux(h, t, Nil[Node]())
+    case Cons(h, t) => getMinAux(h, t, Nil[Node]())
 } ensuring (res =>
   res._2.size == l.size - 1 &&
     res._2.content ++ Set(res._1) == l.content &&

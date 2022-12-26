@@ -3,6 +3,11 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{listings}
+
+\lstset{basicstyle=\ttfamily}
+% \lstset{keywordstyle=\bfseries}
+\lstset{language=scala}
 
 \title{Review: Name Of The Paper}
 %\subtitle{Formal Verification Background Paper Report}
@@ -19,13 +24,120 @@ State the technical details that are necessary to understand the paper. It is ge
 
 \section{Body}
 Explain the paper, in your own words. Don't go into as many details as the original text, but the person reading your review should have a general understanding of the paper's results and how those results can be obtained. The structure and content of this section of course heavily depends on the paper itself. Don't hesitate to split it in multiple sections or subsections, for example:
-\subsection{An algorithm for whatever problem we try to solve}
-If your paper contains theorems, sketch the proofs of important theorems. 
 
-\subsection{Benchmarks}
-If it contains benchmarks, show the key scores or results.
+\subsection{Functional Graph}
 
-You can follow the structure of the paper you're reviewing, but write with your own words.
+We represents graphs using associate lists of each vertex and 
+its edges to its nearby edges with its distance (or weight).
+
+\begin{lstlisting}
+case class Graph(graph: 
+    List[(Int, List[(Int, Distance)])])
+\end{lstlisting}
+
+definition of a valid graph
+
+\begin{lstlisting}
+def validGraph(graph: 
+    List[(Int, List[(Int, Distance)])]): Boolean =
+  noDuplicates(graph) &&
+  graph.forall(e => noDuplicates(e._2)) &&
+  graph.forall(e => 
+    e._2.forall((i, _) => graph.get(i) != None())) &&
+  graph.forall(n => 
+    n._2.forall(z => 0.toDist <= z._2)) &&
+  graph.forall { case (n, a) =>
+        a.get(n) match {
+        case None()  => true
+        case Some(d) => d == 0.toDist
+        }
+}
+\end{lstlisting}
+
+
+\subsection{The Algotirhm}
+
+the algorithm
+
+\begin{lstlisting}
+def dijkstra(start: Int): List[Node] = {
+    require(graph.get(start) != None())
+    iterate(Nil[Node](), prepare(start))
+}
+\end{lstlisting}
+
+\subsubsection{Representing distance}
+
+Distance used in Dijistra algorithm, 
+a distance is either infinite or a non-negative number.
+
+
+\begin{lstlisting}
+sealed abstract class Distance
+case object Inf extends Distance
+case class Real(i: BigInt) extends Distance { 
+    require(i >= 0) 
+}
+\end{lstlisting}
+
+We also need to define addition and comparsion bewtween Distance, 
+which is just integer addditon and comparsion with infinity.
+
+\subsubsection{A verified \texttt{getMin}}
+
+One important step in the dijkstra algorithm is extracting the node with
+minimial distance to the source, so we need to build a pure function that
+return the node that is closest to the source and the rest of nodes.
+
+\begin{lstlisting}
+def getMin(l: List[Node]): (Node, List[Node]) = {
+  require(l != Nil())
+  l match
+    case Cons(h, t) => getMinAux(h, t, Nil[Node]())
+} ensuring (res =>
+  res._2.size == l.size - 1 &&
+    res._2.content ++ Set(res._1) == l.content &&
+    res._2.map(_._1).content ++ Set(res._1._1) == 
+      l.map(_._1).content &&
+    res._2.forall(n => res._1._2 <= n._2)
+)
+\end{lstlisting}
+
+Here we would call a helper function \texttt{getMinAux} which carries the min value,
+the traversed list and the rest to get the result. Ensuring that the remaining list
+is 1 shorter, the set of content of the remaining list with min node equals the original
+content of the original list. Finally the most important property is the all the nodes
+in the remaining list should have a longer distance than the we min one we get.
+
+In this way, we ensure that the \texttt{getMin} function is correctly implemented.
+
+\subsubsection{Phase 1: prepare}
+
+prepare will generate a list of nodes, which is a list tuples associating each vertex's
+distance to the source node.
+
+\begin{lstlisting}
+def prepare(start: Int): List[Node] = {
+    require(graph.get(start) != None())
+    prepareAux(graph, start)
+} ensuring (res => prepareProp(res, graph, start))
+\end{lstlisting}
+
+\begin{lstlisting}
+def prepareAux(
+    graph: List[(Int, List[Node])],
+    start: Int
+): List[Node] =
+\end{lstlisting}
+
+\subsubsection{Phase 2: main loop}
+
+\begin{lstlisting}
+def iterate(seen: List[Node], 
+    future: List[Node]): List[Node]
+\end{lstlisting}
+
+\section{Future Work}
 
 \section{Conclusion}
 Recall  briefly what the paper achieves, and how it is new. Express your critical skil on the paper and explain what you think are the strong and weak points of the paper. Also tell how you could potentially use the paper's results in your future project. You can also suggest further work or extensions to the paper.
