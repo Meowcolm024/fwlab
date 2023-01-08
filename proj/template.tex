@@ -3,10 +3,15 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{listings}
 
-\title{Review: Name Of The Paper}
+\lstset{basicstyle=\ttfamily}
+% \lstset{keywordstyle=\bfseries}
+\lstset{language=scala}
+
+\title{Review: Verified Dijkstra's Algorithm}
 %\subtitle{Formal Verification Background Paper Report}
-\author{First1 Last1 \\ email1@epfl.ch \and First2 Last2\\email2@epfl.ch}
+\author{Qingyi He \\ qingyi.he@epfl.ch \and Yicong Luo\\yicong.luo@epfl.ch}
            
 \begin{document}
 \maketitle
@@ -15,17 +20,253 @@
 Say a few general words about the general context of the paper you chose. Explain why the topic is of interest, or where it can be applied. If it is about a piece of software or artifact, give a description of it. State the main result of the paper and why it is new or how it improves on previous state of knowledge. You can cite references using, for example \cite{BibliographyManagementLaTeX} and make a succint presentation of the organisation of your report.
 
 \section{Preliminaries}
-State the technical details that are necessary to understand the paper. It is generally a collection of definitions, concepts and notations with potentially a few preliminary results. It can be, for example the mathematical framework in which the topic of your paper is expressed. In particular, fix the notation you will be using for your review.
+
+Something about graphs and the algorithm.
+
+The Dijkstra's algorithm:
+
+\begin{lstlisting}
+def Dijkstra(Graph, source) =
+  for vertex v in Graph do
+    if v == source then 
+      dist[v] <- INFINITY
+    else
+      dist[v] <- 0
+    add v to Q
+
+  while Q is not empty do
+    u <- vertex in Q with min dist[u]
+    remove u from Q
+    for neighbor v of u in Q do
+      alt <- dist[u] + Graph.Edges(u, v)
+      if alt < dist[v] then
+        dist[v] <- alt
+
+  return dist
+\end{lstlisting}
 
 \section{Body}
-Explain the paper, in your own words. Don't go into as many details as the original text, but the person reading your review should have a general understanding of the paper's results and how those results can be obtained. The structure and content of this section of course heavily depends on the paper itself. Don't hesitate to split it in multiple sections or subsections, for example:
-\subsection{An algorithm for whatever problem we try to solve}
-If your paper contains theorems, sketch the proofs of important theorems. 
 
-\subsection{Benchmarks}
-If it contains benchmarks, show the key scores or results.
+To build a verified dijkstra algoritm in lisa, the first thing we need to do
+is to translate this algorithm to a functional way.
 
-You can follow the structure of the paper you're reviewing, but write with your own words.
+\subsection{Functional Graph}
+
+We represents graphs using associate lists of each vertex and 
+its edges to its nearby edges with its distance (or weight).
+
+\begin{lstlisting}
+case class Graph(graph: 
+    List[(Int, List[(Int, Distance)])])
+\end{lstlisting}
+
+We also define the "valid graph", to avoid lisa generating invalid
+graphs (e.g. vertexes that have non-zero distance to itself).
+
+\begin{lstlisting}
+def validGraph(
+  graph: List[(Int, List[(Int, Distance)])]
+): Boolean =
+  noDuplicates(graph) &&
+  graph.forall(e => noDuplicates(e._2)) &&
+  graph.forall(e => 
+    e._2.forall((i, _) => graph.get(i) != None())) &&
+  graph.forall(n => 
+    n._2.forall(z => 0.toDist <= z._2)) &&
+  graph.forall { case (n, a) =>
+    a.get(n) match {
+    case None()  => true
+    case Some(d) => d == 0.toDist
+    }
+  }
+\end{lstlisting}
+
+
+\subsection{The Algotirhm}
+
+The (functional) dijkstra's algorithm resembles the original version,
+which we frist generate the list of distances \texttt{Q}, then get into
+the main loop.
+
+\begin{lstlisting}
+// type Node = (Int, Distance)
+def dijkstra(source: Int): List[Node] = {
+    require(graph.get(source) != None())
+    val Q = prepare(source)
+    iterate(Nil[Node](), Q)
+}
+\end{lstlisting}
+
+\subsubsection{Representing distance}
+
+Distance used in Dijistra algorithm, a distance is either infinite or 
+a non-negative number. However, such data structure is not built-in in
+Scala, so we need to define the following.
+
+
+\begin{lstlisting}
+sealed abstract class Distance
+case object Inf extends Distance
+case class Real(i: BigInt) extends Distance { 
+    require(i >= 0) 
+}
+\end{lstlisting}
+
+We also need to define addition and comparsion bewtween Distance, 
+which is just integer addditon and comparsion with infinity.
+
+\subsubsection{A verified \texttt{getMin}}
+
+One important step in the dijkstra algorithm is extracting the node with
+minimial distance to the source, so we need to build a pure function that
+return the node that is closest to the source and the rest of nodes.
+
+\begin{lstlisting}
+def getMin(l: List[Node]): (Node, List[Node]) = {
+  require(l != Nil())
+  l match
+    case Cons(h, t) => getMinAux(h, t, Nil[Node]())
+} ensuring (res =>
+  res._2.size == l.size - 1 &&
+    res._2.content ++ Set(res._1) == l.content &&
+    res._2.map(_._1).content ++ Set(res._1._1) == 
+      l.map(_._1).content &&
+    res._2.forall(n => res._1._2 <= n._2)
+)
+\end{lstlisting}
+
+Here we would call a helper function \texttt{getMinAux} which carries the min value,
+the traversed list and the rest to get the result. Ensuring that the remaining list
+is 1 shorter, the set of content of the remaining list with min node equals the original
+content of the original list. Finally the most important property is the all the nodes
+in the remaining list should have a longer distance than the we min one we get.
+
+In this way, we ensure that the \texttt{getMin} function is correctly implemented.
+
+\subsubsection{Preprocessing}
+
+The first stage of the algorithm is to generate a list of vertexes with there initial 
+distance to the source node, which every vertex should have a distance of inifinty 
+and the source itself has distance 0.
+
+\begin{lstlisting}
+def prepare(start: Int): List[Node] = {
+    require(graph.get(start) != None())
+    prepareAux(graph, start)
+} ensuring (res => prepareProp(res, graph, start))
+\end{lstlisting}
+
+This accomplished in the \texttt{prepareAux} function, which is a simple mapping of
+the vertexes in the graph to the corresponding distance (either inifinty or 0).
+
+\begin{lstlisting}
+def prepareProp(
+    res: List[Node],
+    graph: List[(Int, List[Node])],
+    start: Int
+): Boolean =
+  res.size == graph.size &&
+    res.map(_._1).content == 
+      graph.map(_._1).content &&
+    res.map(_._1) == graph.map(_._1) &&
+    (res.get(start) match {
+      case Some(d) => d == Real(0)
+      case None()  => res.forall(_._2 == Inf)
+    })
+\end{lstlisting}
+
+\subsubsection{Main loop}
+
+The main loop also resembles the original version, where we extract the vertex \texttt{h} with
+minimial distance to the source then update all the distances of the vertexes left
+using \texttt{h}. 
+
+\begin{lstlisting}
+def iterate(
+  seen: List[Node], 
+  future: List[Node]
+): List[Node] = {
+  /* decreases and requires */
+  future match
+    case Nil() => seen
+    case fu @ Cons(_, _) =>
+      val (h, t) = getMin(fu)
+      iterate(h :: seen, iterOnce(h, t))
+} /* ensurings */
+\end{lstlisting}
+
+The updates are accomplished by the \texttt{iterOnce} function. It ensures
+that the nodes in the updated list will have a shorter distance to the source
+and all of their distances are larger than \texttt{cur}, as otherwise \texttt{cur} 
+will no longer be the vertex that is shortest in the list. This help us verify
+that the updates of the distances are implemented correctly.
+
+\begin{lstlisting}
+def iterOnce(cur: Node, rest: List[Node]): List[Node] = {
+  decreases(rest.size)
+  require(rest.forall(n => cur._2 <= n._2))
+  rest match {
+      case Nil()      => Nil()
+      case Cons(h, t) => 
+        Cons(updateDist(cur, h), iterOnce(cur, t))
+  }
+} ensuring (res =>
+  res.forall(n => cur._2 <= n._2) &&
+  res.map(_._1).content == 
+    rest.map(_._1).content &&
+  res.size == rest.size &&
+  res.zip(rest)
+    .forall((y, x) => y._1 == x._1 && y._2 <= x._2)
+)
+\end{lstlisting}
+
+This is just a simple \texttt{map} over the list \texttt{rest}, applying
+function \texttt{updateDist}, which is simply defined as the following.
+
+\begin{lstlisting}
+def updateDist(cur: Node, tar: Node): Node = {
+  require(cur._2 <= tar._2)
+  val nd = cur._2 + distance(cur._1, tar._1)
+  (tar._1, if nd <= tar._2 then nd else tar._2)
+} ensuring (res => res._2 <= tar._2 && cur._2 <= res._2)
+\end{lstlisting}
+
+The \texttt{ensuring} part verified that it the node returned will always have
+as shorter or equal distance to the source.
+
+\section{Future Work}
+
+However, we are not able make it pass one of the most important properties of the 
+dijkstra's algoritm, which is the "triangle inequality", that is, if we choose two
+random vertexes in the resulting list (of distances), we should have the distance
+of vertex \texttt{m} to the source should be equal or smaller than the distance of
+sum of first going to vertex \texttt{n} then go to vertex \texttt{m}, otherwise the
+distance of \texttt{m} should be the smaller (which shows a faulty implementation).
+
+\begin{lstlisting}
+def itInv(seen: List[Node]): Boolean =
+  seen.forall { case (m, d0) =>
+    seen.forall { case (n, d) =>
+      n == m ||
+      (graph.get(n).flatMap(_.get(m)) match
+        case None     => true
+        case Some(d1) => d0 <= d1 + d
+      )
+    }
+  }
+\end{lstlisting}
+
+Such invariant should hold for \texttt{seen} or \texttt{res} in the main loop \texttt{iterate}.
+However, we cannot just \textit{require} or \textit{ensure} such property in lisa, since it will
+timeout as expected.
+
+To help lisa verify such property, we still need other lemmas. For example, whenever we add a vertex
+to the \texttt{seen} nodes, we know that the newly added vertex should always have a longer distance
+to the source vertex, otherwise we havn't extracted the vertex with min distance last time. But to verify
+this, we need to we would need extra constrains in our \texttt{getMin} function, as it is deeply tied
+to the min node we have extracted.
+
+Unfortunately, even though we have attempted, we did not get it pass lisa.
 
 \section{Conclusion}
 Recall  briefly what the paper achieves, and how it is new. Express your critical skil on the paper and explain what you think are the strong and weak points of the paper. Also tell how you could potentially use the paper's results in your future project. You can also suggest further work or extensions to the paper.
