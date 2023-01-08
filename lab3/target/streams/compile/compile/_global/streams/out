@@ -1,0 +1,301 @@
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:1:8: not found: object lisa[0m
+[0m[[0m[31merror[0m] [0m[0mimport lisa.automation.kernel.SimplePropositionalSolver.*[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:2:8: not found: object lisa[0m
+[0m[[0m[31merror[0m] [0m[0mimport lisa.automation.kernel.SimpleSimplifier.*[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:5:22: not found: value lisa[0m
+[0m[[0m[31merror[0m] [0m[0mobject Lab03 extends lisa.Main{[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:7:19: not found: value VariableLabel[0m
+[0m[[0m[31merror[0m] [0m[0m  private val x = VariableLabel("x")[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:8:19: not found: value VariableLabel[0m
+[0m[[0m[31merror[0m] [0m[0m  private val y = VariableLabel("y")[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:9:19: not found: value VariableLabel[0m
+[0m[[0m[31merror[0m] [0m[0m  private val z = VariableLabel("z")[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:10:19: not found: value SchematicPredicateLabel[0m
+[0m[[0m[31merror[0m] [0m[0m  private val Q = SchematicPredicateLabel("P", 1)[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:11:19: not found: value SchematicPredicateLabel[0m
+[0m[[0m[31merror[0m] [0m[0m  private val H = SchematicPredicateLabel("R", 2)[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:39:3: not found: value THEOREM[0m
+[0m[[0m[31merror[0m] [0m[0m  THEOREM("Ex_All_implies_All_Ex") of "∃'x. ∀'y. 'R('x, 'y) ⊢ ∀'y. ∃'x. 'R('x, 'y)" PROOF {[0m
+[0m[[0m[31merror[0m] [0m[0m  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:40:5: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    have ( H(x, y) |- H(x, y) ) by Hypothesis  // start[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:40:36: not found: value Hypothesis[0m
+[0m[[0m[31merror[0m] [0m[0m    have ( H(x, y) |- H(x, y) ) by Hypothesis  // start[0m
+[0m[[0m[31merror[0m] [0m[0m                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:41:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( forall(y, H(x, y)) |- H(x, y) ) by LeftForall(y)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:41:15: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( forall(y, H(x, y)) |- H(x, y) ) by LeftForall(y)[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:41:50: not found: value LeftForall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( forall(y, H(x, y)) |- H(x, y) ) by LeftForall(y)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:42:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( forall(y, H(x, y)) |- exists(x, H(x, y)) ) by RightExists(x)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:42:15: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( forall(y, H(x, y)) |- exists(x, H(x, y)) ) by RightExists(x)[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:42:37: not found: value exists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( forall(y, H(x, y)) |- exists(x, H(x, y)) ) by RightExists(x)[0m
+[0m[[0m[31merror[0m] [0m[0m                                    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:42:61: not found: value RightExists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( forall(y, H(x, y)) |- exists(x, H(x, y)) ) by RightExists(x)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:43:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- exists(x, H(x, y)) ) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:43:15: not found: value exists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- exists(x, H(x, y)) ) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:43:25: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- exists(x, H(x, y)) ) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:43:48: not found: value exists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- exists(x, H(x, y)) ) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m                                               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:43:72: not found: value LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- exists(x, H(x, y)) ) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:44:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- forall(y, exists(x, H(x, y))) ) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:44:15: not found: value exists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- forall(y, exists(x, H(x, y))) ) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:44:25: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- forall(y, exists(x, H(x, y))) ) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:44:48: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- forall(y, exists(x, H(x, y))) ) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m                                               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:44:58: not found: value exists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- forall(y, exists(x, H(x, y))) ) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m                                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:44:83: not found: value RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen ( exists(x, forall(y, H(x, y))) |- forall(y, exists(x, H(x, y))) ) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:47:3: not found: value show[0m
+[0m[[0m[31merror[0m] [0m[0m  show[0m
+[0m[[0m[31merror[0m] [0m[0m  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:49:3: not found: value THEOREM[0m
+[0m[[0m[31merror[0m] [0m[0m  THEOREM("Unique_Exist_Variant") of "∃'y. ∀'x. ('P('x) ⇔ 'x='y) ⊢ ∃'y. 'P('y) ∧ (∀'x. 'P('x) ⇒ 'x='y)" PROOF {[0m
+[0m[[0m[31merror[0m] [0m[0m  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:50:5: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    have(Q(x) <=> (x===y) |- (Q(x) <=> (x===y))) by Restate[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:50:53: not found: value Restate[0m
+[0m[[0m[31merror[0m] [0m[0m    have(Q(x) <=> (x===y) |- (Q(x) <=> (x===y))) by Restate[0m
+[0m[[0m[31merror[0m] [0m[0m                                                    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:51:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen((Q(x) <=> (x===y)) |- (Q(x) ==>(x===y)) /\ ((x===y)==>Q(x))) by Restate[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:51:77: not found: value Restate[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen((Q(x) <=> (x===y)) |- (Q(x) ==>(x===y)) /\ ((x===y)==>Q(x))) by Restate[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:53:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(Q(x) <=> (x===y) |- (Q(x) ==> (x===y))) by Trivial[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:53:56: not found: value Trivial[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(Q(x) <=> (x===y) |- (Q(x) ==> (x===y))) by Trivial[0m
+[0m[[0m[31merror[0m] [0m[0m                                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:54:14: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (Q(x) ==> (x===y))) by LeftForall(x)[0m
+[0m[[0m[31merror[0m] [0m[0m             ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:54:22: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (Q(x) ==> (x===y))) by LeftForall(x)[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:54:76: not found: value LeftForall[0m
+[0m[[0m[31merror[0m] [0m[0m    val p1 = andThen(forall(x, Q(x) <=> (x===y)) |- (Q(x) ==> (x===y))) by LeftForall(x)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:57:16: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    val try1 = have(Q(y) |- Q(y)) by Restate[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:57:38: not found: value Restate[0m
+[0m[[0m[31merror[0m] [0m[0m    val try1 = have(Q(y) |- Q(y)) by Restate[0m
+[0m[[0m[31merror[0m] [0m[0m                                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:59:16: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    val try2 = andThen(Q(y) |- ((y===x), Q(y))) by Weakening[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:59:52: not found: value Weakening[0m
+[0m[[0m[31merror[0m] [0m[0m    val try2 = andThen(Q(y) |- ((y===x), Q(y))) by Weakening[0m
+[0m[[0m[31merror[0m] [0m[0m                                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:60:5: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    have((Q(y)<=> (y===y)) |- Q(y)) by LeftImplies(try1, try2)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:60:40: not found: value LeftImplies[0m
+[0m[[0m[31merror[0m] [0m[0m    have((Q(y)<=> (y===y)) |- Q(y)) by LeftImplies(try1, try2)[0m
+[0m[[0m[31merror[0m] [0m[0m                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:62:14: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    val p2 = andThen((forall(x, Q(x)<=>(x===y))) |- Q(y)) by LeftForall(x)[0m
+[0m[[0m[31merror[0m] [0m[0m             ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:62:23: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    val p2 = andThen((forall(x, Q(x)<=>(x===y))) |- Q(y)) by LeftForall(x)[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:62:62: not found: value LeftForall[0m
+[0m[[0m[31merror[0m] [0m[0m    val p2 = andThen((forall(x, Q(x)<=>(x===y))) |- Q(y)) by LeftForall(x)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:64:5: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    have(forall(x, Q(x) <=> (x===y)) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by RightAnd(p1, p2)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:64:10: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    have(forall(x, Q(x) <=> (x===y)) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by RightAnd(p1, p2)[0m
+[0m[[0m[31merror[0m] [0m[0m         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:64:81: not found: value RightAnd[0m
+[0m[[0m[31merror[0m] [0m[0m    have(forall(x, Q(x) <=> (x===y)) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by RightAnd(p1, p2)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:65:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:65:13: not found: value exists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:65:23: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:65:95: not found: value LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- Q(y) /\ forall(x, Q(x) ==> (x===y))) by LeftExists[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:66:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- exists(y, Q(y) /\ forall(x, Q(x) ==> (x===y)))) by RightExists(y)[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:66:13: not found: value exists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- exists(y, Q(y) /\ forall(x, Q(x) ==> (x===y)))) by RightExists(y)[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:66:23: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- exists(y, Q(y) /\ forall(x, Q(x) ==> (x===y)))) by RightExists(y)[0m
+[0m[[0m[31merror[0m] [0m[0m                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:66:55: not found: value exists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- exists(y, Q(y) /\ forall(x, Q(x) ==> (x===y)))) by RightExists(y)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:66:106: not found: value RightExists[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(exists(y, forall(x, Q(x) <=> (x===y))) |- exists(y, Q(y) /\ forall(x, Q(x) ==> (x===y)))) by RightExists(y)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:77:3: not found: value THEOREM[0m
+[0m[[0m[31merror[0m] [0m[0m  THEOREM("Subset_Reflexivity") of " ⊢ subset_of('x, 'x)" PROOF {[0m
+[0m[[0m[31merror[0m] [0m[0m  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:78:16: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    val subs = have(subsetAxiom) //  ⊢ ∀'x. ∀'y. (∀'z. 'z ∊ 'x ⇔ 'z ∊ 'y) ⇔ 'x = 'y[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:78:21: not found: value subsetAxiom[0m
+[0m[[0m[31merror[0m] [0m[0m    val subs = have(subsetAxiom) //  ⊢ ∀'x. ∀'y. (∀'z. 'z ∊ 'x ⇔ 'z ∊ 'y) ⇔ 'x = 'y[0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:79:5: not found: value showCurrentProof[0m
+[0m[[0m[31merror[0m] [0m[0m    showCurrentProof()               //shows the current sequent calculus proof[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:80:14: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = andThen(() |- forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)) by InstantiateForall(x, x)    //InstantiateForall will instantiate a universally bound formula on the right of a sequent with the given terms.[0m
+[0m[[0m[31merror[0m] [0m[0m             ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:80:25: value |- is not a member of Unit[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = andThen(() |- forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)) by InstantiateForall(x, x)    //InstantiateForall will instantiate a universally bound formula on the right of a sequent with the given terms.[0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:80:28: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = andThen(() |- forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)) by InstantiateForall(x, x)    //InstantiateForall will instantiate a universally bound formula on the right of a sequent with the given terms.[0m
+[0m[[0m[31merror[0m] [0m[0m                           ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:80:38: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = andThen(() |- forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)) by InstantiateForall(x, x)    //InstantiateForall will instantiate a universally bound formula on the right of a sequent with the given terms.[0m
+[0m[[0m[31merror[0m] [0m[0m                                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:80:51: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = andThen(() |- forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)) by InstantiateForall(x, x)    //InstantiateForall will instantiate a universally bound formula on the right of a sequent with the given terms.[0m
+[0m[[0m[31merror[0m] [0m[0m                                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:80:65: not found: value subset[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = andThen(() |- forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)) by InstantiateForall(x, x)    //InstantiateForall will instantiate a universally bound formula on the right of a sequent with the given terms.[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:80:82: not found: value InstantiateForall[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = andThen(() |- forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)) by InstantiateForall(x, x)    //InstantiateForall will instantiate a universally bound formula on the right of a sequent with the given terms.[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:81:5: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    have(() |- in(z, x) ==> in(z, x)) by Restate                                                            //Restate solves automatically a class of easy proposition, including reflexivity of equality, alpha-equivalence of formulas, and some propositional logic properties[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:81:13: value |- is not a member of Unit[0m
+[0m[[0m[31merror[0m] [0m[0m    have(() |- in(z, x) ==> in(z, x)) by Restate                                                            //Restate solves automatically a class of easy proposition, including reflexivity of equality, alpha-equivalence of formulas, and some propositional logic properties[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:81:16: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    have(() |- in(z, x) ==> in(z, x)) by Restate                                                            //Restate solves automatically a class of easy proposition, including reflexivity of equality, alpha-equivalence of formulas, and some propositional logic properties[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:81:29: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    have(() |- in(z, x) ==> in(z, x)) by Restate                                                            //Restate solves automatically a class of easy proposition, including reflexivity of equality, alpha-equivalence of formulas, and some propositional logic properties[0m
+[0m[[0m[31merror[0m] [0m[0m                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:81:42: not found: value Restate[0m
+[0m[[0m[31merror[0m] [0m[0m    have(() |- in(z, x) ==> in(z, x)) by Restate                                                            //Restate solves automatically a class of easy proposition, including reflexivity of equality, alpha-equivalence of formulas, and some propositional logic properties[0m
+[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:82:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(() |- forall(z, in(z, x) ==> in(z, x))) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:82:16: value |- is not a member of Unit[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(() |- forall(z, in(z, x) ==> in(z, x))) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:82:19: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(() |- forall(z, in(z, x) ==> in(z, x))) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:82:29: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(() |- forall(z, in(z, x) ==> in(z, x))) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:82:42: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(() |- forall(z, in(z, x) ==> in(z, x))) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m                                         ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:82:56: not found: value RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(() |- forall(z, in(z, x) ==> in(z, x))) by RightForall[0m
+[0m[[0m[31merror[0m] [0m[0m                                                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:83:5: not found: value andThen[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(applySubst(forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)))                                  //applySubst will replace  occurences of the left-hand-side of the equivalence given in argument by the right-hand-side in the current sequent.[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:83:13: not found: value applySubst[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(applySubst(forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)))                                  //applySubst will replace  occurences of the left-hand-side of the equivalence given in argument by the right-hand-side in the current sequent.[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:83:24: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(applySubst(forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)))                                  //applySubst will replace  occurences of the left-hand-side of the equivalence given in argument by the right-hand-side in the current sequent.[0m
+[0m[[0m[31merror[0m] [0m[0m                       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:83:34: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(applySubst(forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)))                                  //applySubst will replace  occurences of the left-hand-side of the equivalence given in argument by the right-hand-side in the current sequent.[0m
+[0m[[0m[31merror[0m] [0m[0m                                 ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:83:47: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(applySubst(forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)))                                  //applySubst will replace  occurences of the left-hand-side of the equivalence given in argument by the right-hand-side in the current sequent.[0m
+[0m[[0m[31merror[0m] [0m[0m                                              ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:83:61: not found: value subset[0m
+[0m[[0m[31merror[0m] [0m[0m    andThen(applySubst(forall(z, in(z, x) ==> in(z, x)) <=> subset(x, x)))                                  //applySubst will replace  occurences of the left-hand-side of the equivalence given in argument by the right-hand-side in the current sequent.[0m
+[0m[[0m[31merror[0m] [0m[0m                                                            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:84:5: not found: value Discharge[0m
+[0m[[0m[31merror[0m] [0m[0m    Discharge(r1)                                                                                           //Discharge removes the formula proven on the right of sequent r1 from the left-hand-side of the current sequent[0m
+[0m[[0m[31merror[0m] [0m[0m    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:87:3: not found: value THEOREM[0m
+[0m[[0m[31merror[0m] [0m[0m  THEOREM("Subset_Transitivity") of "subset_of('x, 'y); subset_of('y, 'z) ⊢ subset_of('x, 'z)" PROOF {[0m
+[0m[[0m[31merror[0m] [0m[0m  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:88:16: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    val subs = have(subsetAxiom)          //  ⊢ ∀'x. ∀'y. 'x ⊆ 'y ⇔ (∀'z. 'z ∊ 'x ⇒ 'z ∊ 'y)[0m
+[0m[[0m[31merror[0m] [0m[0m               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:88:21: not found: value subsetAxiom[0m
+[0m[[0m[31merror[0m] [0m[0m    val subs = have(subsetAxiom)          //  ⊢ ∀'x. ∀'y. 'x ⊆ 'y ⇔ (∀'z. 'z ∊ 'x ⇒ 'z ∊ 'y)[0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:89:13: not found: value VariableLabel[0m
+[0m[[0m[31merror[0m] [0m[0m    val a = VariableLabel("a")[0m
+[0m[[0m[31merror[0m] [0m[0m            ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:90:14: not found: value have[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = have(() |- forall(a, in(a, x) ==> in(a, y)) <=> subset(x, y) ) by InstantiateForall(x, y)(subsetAxiom)[0m
+[0m[[0m[31merror[0m] [0m[0m             ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:90:22: value |- is not a member of Unit[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = have(() |- forall(a, in(a, x) ==> in(a, y)) <=> subset(x, y) ) by InstantiateForall(x, y)(subsetAxiom)[0m
+[0m[[0m[31merror[0m] [0m[0m                     ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:90:25: not found: value forall[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = have(() |- forall(a, in(a, x) ==> in(a, y)) <=> subset(x, y) ) by InstantiateForall(x, y)(subsetAxiom)[0m
+[0m[[0m[31merror[0m] [0m[0m                        ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:90:35: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = have(() |- forall(a, in(a, x) ==> in(a, y)) <=> subset(x, y) ) by InstantiateForall(x, y)(subsetAxiom)[0m
+[0m[[0m[31merror[0m] [0m[0m                                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:90:48: not found: value in[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = have(() |- forall(a, in(a, x) ==> in(a, y)) <=> subset(x, y) ) by InstantiateForall(x, y)(subsetAxiom)[0m
+[0m[[0m[31merror[0m] [0m[0m                                               ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/flaze/fwlab/lab3/Lab03.scala:90:62: not found: value subset[0m
+[0m[[0m[31merror[0m] [0m[0m    val r1 = have(() |- forall(a, in(a, x) ==> in(a, y)) <=> subset(x, y) ) by InstantiateForall(x, y)(subsetAxiom)[0m
+[0m[[0m[31merror[0m] [0m[0m                                                             ^[0m
+[0m[[0m[31merror[0m] [0m[0m100 errors found[0m

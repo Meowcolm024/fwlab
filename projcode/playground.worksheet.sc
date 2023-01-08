@@ -207,6 +207,7 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
         ) // updated dists should be smaller
   ) */
 
+  // Less or Equal
   def checkNode1(seen: List[Node], to: Int, rest_from: List[(Int, Int, Distance)], sourceNode: Int): Boolean = {
     assert(seen.get(to) != None)        // assert we can find curent node in seen[]
     val Some(cur_dis, _) = seen.get(to) // cur_dis = dis[to]
@@ -217,6 +218,7 @@ case class Graph(graph: List[(Int, List[(Int, Distance)])]) {
     res1
   }
 
+  // The Path Exists
   def checkNode2(seen: List[Node], to: Int, rest_from: List[(Int, Int, Distance)], sourceNode: Int): Boolean = {
     assert(seen.get(to) != None)        // assert we can find curent node in seen[]
     val Some(cur_dis, _) = seen.get(to) // cur_dis = dis[to]
