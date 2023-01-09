@@ -8,6 +8,9 @@
 \lstset{basicstyle=\ttfamily}
 % \lstset{keywordstyle=\bfseries}
 \lstset{language=scala}
+\NewDocumentCommand{\codeword}{v}{%
+\texttt{\textcolor{}{#1}}%
+}
 
 \title{Review: Verified Dijkstra's Algorithm}
 %\subtitle{Formal Verification Background Paper Report}
@@ -17,13 +20,26 @@
 \maketitle
 
 \section{Introduction}
-Say a few general words about the general context of the paper you chose. Explain why the topic is of interest, or where it can be applied. If it is about a piece of software or artifact, give a description of it. State the main result of the paper and why it is new or how it improves on previous state of knowledge. You can cite references using, for example \cite{BibliographyManagementLaTeX} and make a succint presentation of the organisation of your report.
+% Say a few general words about the general context of the paper you chose. Explain why the topic is of interest, or where it can be applied. If it is about a piece of software or artifact, give a description of it. State the main result of the paper and why it is new or how it improves on previous state of knowledge. You can cite references using, for example \cite{BibliographyManagementLaTeX} and make a succint presentation of the organisation of your report.
+
+Graph algorithms are an important class of algorithms in computer science, with numerous applications in fields such as network analysis, machine learning, and bioinformatics. Despite their widespread use, the verification of graph algorithms has received relatively less attention in the literature compared to other commonly used data structures and algorithms. In this project, we aim to implement Dijkstra's algorithm for shortest path with a verified graph data structure. 
+To explore this subject, we firstly refered to John Launchbury’s paper
+\cite{10.1007/3-540-59451-5_9} and the open-source functional graph libraries. Then, we constructed our graph with stainless and verified Dijkstra’s Algorithm with stainless in this project. 
+
+In the chapters that follow, we'll start by introducing Dijkstra's shortest path algorithm with a piece of pseudo code, and then proceed to discuss how Dijkstra's algorithm and the graph data structure it uses are implemented purely functionally. After that, we'll go over the various approaches for verifying the correctness and reliability of graph algorithms with stainless. The final section will summarize the project and discuss some possible future works. 
 
 \section{Preliminaries}
 
-Something about graphs and the algorithm.
+% Something about graphs and the algorithm.
+\paragraph{Graph}
+Graph is a structure amounting to a set of objects in which some pairs of the objects are in some sense "related". The objects correspond to mathematical abstractions called vertices and each of the related pairs of vertices is called an edge\cite{enwiki:1132329416}. 
 
-The Dijkstra's algorithm:
+\paragraph{Dijkstra's Algorithm}
+Dijkstra's Algorithm\cite{goldberg1993heuristic} is an algorithm for finding the shortest paths between nodes in a graph, which doesn't contain any negative-valued edges. This algorithm has many different versions. Dijkstra's original algorithm found the shortest path between two given nodes, but in this project, we focus on a more common variant, which finds shortest paths from a fixed a single source node to all other nodes in the graph, producing a shortest-path tree. 
+
+Generally, Dijkstra's algorithm has a flavour similar to the Breadth-first search (BFS), which stores all the possible nodes that could be chosen in the next iteration. But Dijkstra's algorithm always chooses the "best candidate" that is the closest to the source node and perform the update with it. 
+
+Here is the pseudo code for Dijkstra's algorithm, the \codeword{dist} is an array that records the distance from \codeword{source} to current node :
 
 \begin{lstlisting}
 def Dijkstra(Graph, source) =
@@ -45,23 +61,23 @@ def Dijkstra(Graph, source) =
   return dist
 \end{lstlisting}
 
-\section{Body}
-
-To build a verified dijkstra algoritm in lisa, the first thing we need to do
-is to translate this algorithm to a functional way.
+\section{Implementation}
+In this section, we will describe how to implement Dijkstra's algorithm and the related data structures with stainless, and how to verify the properties it requires. 
+To build a verified Dijkstra's algorithm in stainless, the first thing we need to do
+is to translate this algorithm into a functional way. Then, a verified graph in a purely functional way is required. 
 
 \subsection{Functional Graph}
 
-We represents graphs using associate lists of each vertex and 
-its edges to its nearby edges with its distance (or weight).
+We represent graphs using associate lists of each vertex and 
+its edges to its nearby edges with its distance (or weight). This way fits best in the functional programming, and make it easy to access each vertex's neighbors. 
 
 \begin{lstlisting}
 case class Graph(graph: 
     List[(Int, List[(Int, Distance)])])
 \end{lstlisting}
 
-We also define the "valid graph", to avoid lisa generating invalid
-graphs (e.g. vertexes that have non-zero distance to itself).
+We defined the "valid graph", to avoid stainless generating invalid
+graphs (e.g. vertexes that have a non-zero distance to themselves, or edges connecting two non-existing vertexes). 
 
 \begin{lstlisting}
 def validGraph(
@@ -81,11 +97,10 @@ def validGraph(
   }
 \end{lstlisting}
 
+\subsection{The Functional Dijkstra's Algorithm}
 
-\subsection{The Algotirhm}
-
-The (functional) dijkstra's algorithm resembles the original version,
-which we frist generate the list of distances \texttt{Q}, then get into
+The (functional) Dijkstra's algorithm resembles the original version,
+which we first generate the list of distances \texttt{Q}, then get into
 the main loop.
 
 \begin{lstlisting}
@@ -99,8 +114,8 @@ def dijkstra(source: Int): List[Node] = {
 
 \subsubsection{Representing distance}
 
-Distance used in Dijistra algorithm, a distance is either infinite or 
-a non-negative number. However, such data structure is not built-in in
+The distance used in Dijkstra's algorithm, a distance is either an infinite or 
+a non-negative number. However, the such data structure is not built-in in
 Scala, so we need to define the following.
 
 
@@ -117,9 +132,9 @@ which is just integer addditon and comparsion with infinity.
 
 \subsubsection{A verified \texttt{getMin}}
 
-One important step in the dijkstra algorithm is extracting the node with
-minimial distance to the source, so we need to build a pure function that
-return the node that is closest to the source and the rest of nodes.
+One important step in the Dijkstra's algorithm is extracting the node with
+minimal distance to the source, so we need to build a pure function that
+return the node that is closest to the source and the rest of the nodes.
 
 \begin{lstlisting}
 def getMin(l: List[Node]): (Node, List[Node]) = {
@@ -136,18 +151,18 @@ def getMin(l: List[Node]): (Node, List[Node]) = {
 \end{lstlisting}
 
 Here we would call a helper function \texttt{getMinAux} which carries the min value,
-the traversed list and the rest to get the result. Ensuring that the remaining list
-is 1 shorter, the set of content of the remaining list with min node equals the original
-content of the original list. Finally the most important property is the all the nodes
-in the remaining list should have a longer distance than the we min one we get.
+the traversed list, and the rest to get the result. Ensuring that the remaining list
+is 1 shorter, the set of the content of the remaining list with min node equals the original
+content of the original list. Finally, the most important property is that all the nodes
+in the remaining list should have a longer distance than we min one we get.
 
 In this way, we ensure that the \texttt{getMin} function is correctly implemented.
 
 \subsubsection{Preprocessing}
 
-The first stage of the algorithm is to generate a list of vertexes with there initial 
-distance to the source node, which every vertex should have a distance of inifinty 
-and the source itself has distance 0.
+The first stage of the algorithm is to generate a list of vertexes with their initial 
+distance to the source node, which every vertex should have a distance of infinity 
+and the source itself has a distance 0.
 
 \begin{lstlisting}
 def prepare(start: Int): List[Node] = {
@@ -156,8 +171,8 @@ def prepare(start: Int): List[Node] = {
 } ensuring (res => prepareProp(res, graph, start))
 \end{lstlisting}
 
-This accomplished in the \texttt{prepareAux} function, which is a simple mapping of
-the vertexes in the graph to the corresponding distance (either inifinty or 0).
+This is accomplished in the \texttt{prepareAux} function, which is a simple mapping of
+the vertexes in the graph to the corresponding distance (either infinity or 0).
 
 \begin{lstlisting}
 def prepareProp(
@@ -178,7 +193,7 @@ def prepareProp(
 \subsubsection{Main loop}
 
 The main loop also resembles the original version, where we extract the vertex \texttt{h} with
-minimial distance to the source then update all the distances of the vertexes left
+minimal distance to the source then update all the distances of the vertexes left
 using \texttt{h}. 
 
 \begin{lstlisting}
@@ -198,7 +213,7 @@ def iterate(
 The updates are accomplished by the \texttt{iterOnce} function. It ensures
 that the nodes in the updated list will have a shorter distance to the source
 and all of their distances are larger than \texttt{cur}, as otherwise \texttt{cur} 
-will no longer be the vertex that is shortest in the list. This help us verify
+will no longer be the vertex that is the shortest in the list. This helps us verify
 that the updates of the distances are implemented correctly.
 
 \begin{lstlisting}
@@ -231,17 +246,16 @@ def updateDist(cur: Node, tar: Node): Node = {
 } ensuring (res => res._2 <= tar._2 && cur._2 <= res._2)
 \end{lstlisting}
 
-The \texttt{ensuring} part verified that it the node returned will always have
-as shorter or equal distance to the source.
+The \texttt{ensuring} part verified that the node returned will always have
+as a shorter or equal distances to the source.
 
-\section{Future Work}
-
-However, we are not able make it pass one of the most important properties of the 
-dijkstra's algoritm, which is the "triangle inequality", that is, if we choose two
+\section{Possible Future Work}
+However, we are not able to make it past one of the most important properties of the 
+shortest path algorithm, which is the "triangle inequality". That is, if we choose two
 random vertexes in the resulting list (of distances), we should have the distance
-of vertex \texttt{m} to the source should be equal or smaller than the distance of
+of vertex \texttt{m} to the source should be equal to or smaller than the distance of
 sum of first going to vertex \texttt{n} then go to vertex \texttt{m}, otherwise the
-distance of \texttt{m} should be the smaller (which shows a faulty implementation).
+distance of \texttt{m} should be smaller (which shows a faulty implementation).
 
 \begin{lstlisting}
 def itInv(seen: List[Node]): Boolean =
@@ -257,24 +271,30 @@ def itInv(seen: List[Node]): Boolean =
 \end{lstlisting}
 
 Such invariant should hold for \texttt{seen} or \texttt{res} in the main loop \texttt{iterate}.
-However, we cannot just \textit{require} or \textit{ensure} such property in lisa, since it will
+However, we cannot just \textit{require} or \textit{ensure} such property in stainless, since it will
 timeout as expected.
 
-To help lisa verify such property, we still need other lemmas. For example, whenever we add a vertex
+To help stainless verify such properties, we still need other lemmas. For example, whenever we add a vertex
 to the \texttt{seen} nodes, we know that the newly added vertex should always have a longer distance
-to the source vertex, otherwise we havn't extracted the vertex with min distance last time. But to verify
-this, we need to we would need extra constrains in our \texttt{getMin} function, as it is deeply tied
-to the min node we have extracted.
+to the source vertex, otherwise, we haven't extracted the vertex with min distance last time. But to verify
+this, we need to we would need extra constraints in our \texttt{getMin} function, as it is deeply tied
+to the min node, we have extracted.
 
-Unfortunately, even though we have attempted, we did not get it pass lisa.
+Unfortunately, even though we have attempted, we did not get it past stainless.
 
 \section{Conclusion}
-Recall  briefly what the paper achieves, and how it is new. Express your critical skil on the paper and explain what you think are the strong and weak points of the paper. Also tell how you could potentially use the paper's results in your future project. You can also suggest further work or extensions to the paper.
+% Recall  briefly what the paper achieves, and how it is new. Express your critical skill on the paper and explain what you think are the strong and weak points of the paper. Also tell how you could potentially use the paper's results in your future project. You can also suggest further work or extensions to the paper.
+
+In this project, we verified Dijkstra's algorithm, a well-known graph search algorithm, with stainless. We began by providing an overview of the algorithm and its key features, and then described the verification process in detail, including the methods and tools we used. 
+
+We were able to successfully verify several important properties of Dijkstra's algorithm, such as the correctness of each step, and termination. However, we were unable to prove the triangle inequality, which states that the length of any path between two nodes in a graph is no longer than the sum of the lengths of the two segments obtained by dividing the path at any intermediate node. This is a common challenge in the verification of graph algorithms, as it requires a complex combination of mathematical and logical reasoning. 
+
+Overall, our project explored the potential and limitations of stainless as a tool for verifying graph algorithms. We hope that our work will serve as a valuable reference and inspiration for future exploration of this topic in more depth. 
+
+
 
 \bibliographystyle{plain}
 
 \bibliography{biblio.bib}
-
-
 
 \end{document}
